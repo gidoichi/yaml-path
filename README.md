@@ -22,7 +22,7 @@ to given `line` and `column` in the file.
 Generated path is compilant with [BOSH](https://bosh.io/docs/cli-v2/) `ops-file`
 syntax.
 
-# Why ?
+# Why?
 
 Working with [BOSH](https://bosh.io/docs/cli-v2/) often require to writes
 so-called `ops-file` which are kind of patches for yaml files. Writing the path
@@ -72,19 +72,27 @@ Outputs:
 /top/first/name=myname/attr2
 ```
 
+# Installation
+
+```bash
+git clone https://github.com/jceb/yaml-path.git
+cd yaml-path
+go install
+```
+
 # Integration
 
 ## Emacs
 
 Get a local copy of this repo :
 
-```
-git clone https://github.com/psycofdj/yaml-path.git
+```bash
+git clone https://github.com/jceb/yaml-path.git
 ```
 
 Install emacs `yaml-path` package:
 
-```
+```bash
 cd emacs && make install
 ```
 
@@ -103,11 +111,45 @@ Demo:
 
 ## Vim
 
-Install vim script (see the [README](./plugin/README.md)):
+### Installation Using a Vim plugin manager such as
+
+- [Pathogen](https://github.com/tpope/vim-pathogen)
+- [Vundle](https://github.com/VundleVim/Vundle.vim)
+
+### Manually
+
+```bash
+install -m 0644 -D yaml-path.vim ~/.vim/plugin/
+```
+
+### Neovim Packer Plugin Manager
+
+```lua
+use({
+    "jceb/yaml-path.nvim",
+    run = { "go install" },
+})
+```
+
+### Configuration
+
+In your `~/.vimrc`:
+
+- `g:yamlpath_sep`: change default separator (default: `/`)
+- `g:yamlpath_auto`: enable automatic call on cursor move on YAML files
+  (default: `0`)
+- to call the tool with a keystroke such as F12, add to you `~/.vimrc`:
 
 ```
-cat ./plugin/yaml-path.vim >> ~/.vimrc
+nnoremap <F12> :Yamlpath<CR>
 ```
+
+## Other
+
+To call the tool with a custom separator once (in command mode): `:Yamlpath "."`
+
+<!-- Local Variables: -->
+<!-- End: -->
 
 Demo:
 

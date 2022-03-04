@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/prometheus/common/version"
-	"gopkg.in/alecthomas/kingpin.v2"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	yml "gopkg.in/yaml.v2"
 )
 

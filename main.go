@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+
 	"github.com/prometheus/common/version"
 	"gopkg.in/alecthomas/kingpin.v2"
 	yml "gopkg.in/yaml.v2"
-	"io/ioutil"
-	"os"
 )
 
 var (

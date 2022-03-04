@@ -9,12 +9,11 @@ endif
 function! Yamlpath(...)
   let sep = a:0 ? a:1 : g:yamlpath_sep
   let clean = systemlist('yaml-path --sep=' . sep . ' --line ' . line('.') . ' --col ' . string(col('.')-1), join(getline(1,'$') , "\n"))[0]
-  redraw!
-  echom clean
+  return clean
 endfunction
 
-command! -nargs=? Yamlpath call Yamlpath(<args>)
+command! -nargs=? Yamlpath echom Yamlpath(<args>)
 
 if has("autocmd") && g:yamlpath_auto
-  au FileType yaml :autocmd CursorMoved * call Yamlpath()
+  au FileType yaml :autocmd CursorMoved * echom Yamlpath()
 endif

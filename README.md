@@ -3,7 +3,7 @@
 **Table of Contents**
 
 - [What](#what)
-- [Why ?](#why-)
+- [Why](#why)
 - [Usage](#usage)
 - [Example](#example)
 - [Integration](#integration)
@@ -23,7 +23,7 @@ to given `line` and `column` in the file.
 Generated path is compilant with [BOSH](https://bosh.io/docs/cli-v2/) `ops-file`
 syntax.
 
-# Why?
+# Why
 
 Working with [BOSH](https://bosh.io/docs/cli-v2/) often require to writes
 so-called `ops-file` which are kind of patches for yaml files. Writing the path

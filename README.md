@@ -9,6 +9,7 @@
 - [Integration](#integration)
   - [Emacs](#emacs)
   - [Vim](#vim)
+  - [Neovim](#neovim)
   - [Intellij](#intellij)
 - [Note](#note)
 
@@ -111,7 +112,7 @@ Demo:
 
 ## Vim
 
-### Installation Using a Vim plugin manager such as
+### Plugin manager
 
 - [Pathogen](https://github.com/tpope/vim-pathogen)
 - [Vundle](https://github.com/VundleVim/Vundle.vim)
@@ -120,15 +121,6 @@ Demo:
 
 ```bash
 install -m 0644 -D yaml-path.vim ~/.vim/plugin/
-```
-
-### Neovim Packer Plugin Manager
-
-```lua
-use({
-    "jceb/yaml-path.nvim",
-    run = { "go install" },
-})
 ```
 
 ### Configuration
@@ -143,17 +135,25 @@ In your `~/.vimrc`:
 ```
 nnoremap <F12> :Yamlpath<CR>
 ```
-
-## Other
+### Command
 
 To call the tool with a custom separator once (in command mode): `:Yamlpath "."`
-
-<!-- Local Variables: -->
-<!-- End: -->
 
 Demo:
 
 ![Demo](./doc/demo-vim.gif)
+
+
+## Neovim
+
+### Packer
+
+```lua
+use({
+    "jceb/yaml-path.nvim",
+    run = { "go install" },
+})
+```
 
 ## Intellij
 

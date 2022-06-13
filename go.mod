@@ -1,11 +1,11 @@
-module github.com/jceb/yaml-path
+module github.com/gidoichi/yaml-path
 
 go 1.17
 
 require (
+	github.com/gidoichi/yaml/v2 v2.5.1
 	github.com/prometheus/common v0.32.1
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
-	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -22,7 +22,3 @@ require (
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )
-
-replace gopkg.in/yaml.v2 v2.4.0 => github.com/jceb/yaml v0.0.0-20220304115951-9d5943bde116
-
-// replace gopkg.in/yaml.v2 v2.4.0 => ../yaml

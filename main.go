@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"os"
 
+	yml "github.com/gidoichi/yaml/v2"
 	"github.com/prometheus/common/version"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
-	yml "gopkg.in/yaml.v2"
 )
 
 var (

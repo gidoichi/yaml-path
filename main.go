@@ -21,9 +21,9 @@ var (
 )
 
 func node_match(line int, col int, node *yaml.Node) bool {
-	//fmt.Printf("line: %d=%d,  col : %d <= %d < %d, token=%s\n", node.line, line, node.column, col, node.column+len(node.value), node.value)
+	// fmt.Printf("line: %d=%d,  col : %d <= %d < %d, token=%s\n", node.Line, line, node.Column, col, node.Column+len(node.Value), node.Value)
 	if (node.Line == line) && (node.Column <= col) && (node.Column+len(node.Value) > col) {
-		// fmt.Printf("match on %s!!\n", node.value)
+		// fmt.Printf("match on %s!!\n", node.Value)
 		return true
 	}
 	return false
@@ -64,17 +64,17 @@ func findTokenAtPoint(line int, col int, node *yaml.Node) (addr string, match bo
 		for i := 0; i < len(node.Content); i += 2 {
 			keyNode := node.Content[i]
 			if node_match(line, col, keyNode) {
-				// fmt.Printf("return (%s,%t)\n", keyNode.value, true)
+				// fmt.Printf("return (%s,%t)\n", keyNode.Value, true)
 				return keyNode.Value, true
 			}
 			valNode := node.Content[i+1]
 			a, m := findTokenAtPoint(line, col, valNode)
 			if m == true {
 				if a == "" {
-					// fmt.Printf("return (%s,%t)\n", keyNode.value, true)
+					// fmt.Printf("return (%s,%t)\n", keyNode.Value, true)
 					return keyNode.Value, true
 				} else {
-					// fmt.Printf("return (%s,%t)\n", keyNode.value+"."+a, true)
+					// fmt.Printf("return (%s,%t)\n", keyNode.Value+"."+a, true)
 					return keyNode.Value + Separator + a, true
 				}
 			}
@@ -94,7 +94,7 @@ func findTokenAtPoint(line int, col int, node *yaml.Node) (addr string, match bo
 			}
 		}
 	} else if node.Kind == yaml.ScalarNode {
-		// fmt.Printf("%s = %s\n", path, node.value)
+		// fmt.Printf("%s = %s\n", path, node.Value)
 		if true == node_match(line, col, node) {
 			// fmt.Printf("return (%s,%t)\n", "", true)
 			return "", true
@@ -111,7 +111,6 @@ func Configure(sep string, nameAttr string) {
 }
 
 func PathAtPoint(line int, col int, in []byte) (path string, err error) {
-	// defer handleErr(&err)
 	node := &yaml.Node{}
 	yaml.Unmarshal(in, node)
 	if node != nil {
@@ -142,7 +141,7 @@ func main() {
 	} else {
 		buff, _ = ioutil.ReadAll(os.Stdin)
 	}
-	path, err := PathAtPoint(*line-1, *col, buff)
+	path, err := PathAtPoint(*line, *col, buff)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

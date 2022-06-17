@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"runtime/debug"
 
 	"github.com/prometheus/common/version"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -125,6 +126,23 @@ func PathAtPoint(line int, col int, in []byte) (path string, err error) {
 }
 
 func main() {
+	version.Version = "-"
+	version.Revision = "-"
+	version.Branch = "-"
+	version.BuildUser = "-"
+	version.BuildDate = "-"
+	if info, ok := debug.ReadBuildInfo(); ok {
+		version.Version = info.Main.Version
+
+		m := make(map[string]string, len(info.Settings))
+		for _, s := range info.Settings {
+			m[s.Key] = s.Value
+		}
+		if v, ok := m["vcs.revision"]; ok {
+			version.Revision = v
+		}
+	}
+
 	kingpin.Version(version.Print("yaml-path"))
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()

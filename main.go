@@ -51,16 +51,19 @@ func get_node_name(node *yaml.Node) string {
 }
 
 func findTokenAtPoint(line int, col int, node *yaml.Node) (addr string, match bool) {
-	if node.Kind == yaml.DocumentNode {
+	switch node.Kind {
+	case yaml.DocumentNode:
 		// root node
 		for _, child := range node.Content {
 			a, m := findTokenAtPoint(line, col, child)
-			if m == true {
-				// fmt.Printf("return (%s,%t)\n", "(doc)."+a, true)
-				return Separator + a, true
+			if !m {
+				continue
 			}
+			// fmt.Printf("return (%s,%t)\n", "(doc)."+a, true)
+			return Separator + a, true
 		}
-	} else if node.Kind == yaml.MappingNode {
+
+	case yaml.MappingNode:
 		// map node
 		for i := 0; i < len(node.Content); i += 2 {
 			keyNode := node.Content[i]
@@ -70,33 +73,37 @@ func findTokenAtPoint(line int, col int, node *yaml.Node) (addr string, match bo
 			}
 			valNode := node.Content[i+1]
 			a, m := findTokenAtPoint(line, col, valNode)
-			if m == true {
-				if a == "" {
-					// fmt.Printf("return (%s,%t)\n", keyNode.Value, true)
-					return keyNode.Value, true
-				} else {
-					// fmt.Printf("return (%s,%t)\n", keyNode.Value+"."+a, true)
-					return keyNode.Value + Separator + a, true
-				}
+			if !m {
+				continue
+			}
+			if a == "" {
+				// fmt.Printf("return (%s,%t)\n", keyNode.Value, true)
+				return keyNode.Value, true
+			} else {
+				// fmt.Printf("return (%s,%t)\n", keyNode.Value+"."+a, true)
+				return keyNode.Value + Separator + a, true
 			}
 		}
-	} else if node.Kind == yaml.SequenceNode {
+
+	case yaml.SequenceNode:
 		// array node
 		for idx, child := range node.Content {
 			a, m := findTokenAtPoint(line, col, child)
-			if m == true {
-				name := get_node_name(child)
-				if name != "" {
-					// fmt.Printf("return (%s,%t)\n", fmt.Sprintf("[name=%s].%s", name, a), true)
-					return fmt.Sprintf("%s=%s%s%s", NameAttr, name, Separator, a), true
-				}
-				// fmt.Printf("return (%s,%t)\n", fmt.Sprintf("[%d].%s", idx, a), true)
-				return fmt.Sprintf("%d%s%s", idx, Separator, a), true
+			if !m {
+				continue
 			}
+			name := get_node_name(child)
+			if name != "" {
+				// fmt.Printf("return (%s,%t)\n", fmt.Sprintf("[name=%s].%s", name, a), true)
+				return fmt.Sprintf("%s=%s%s%s", NameAttr, name, Separator, a), true
+			}
+			// fmt.Printf("return (%s,%t)\n", fmt.Sprintf("[%d].%s", idx, a), true)
+			return fmt.Sprintf("%d%s%s", idx, Separator, a), true
 		}
-	} else if node.Kind == yaml.ScalarNode {
+
+	case yaml.ScalarNode:
 		// fmt.Printf("%s = %s\n", path, node.Value)
-		if true == node_match(line, col, node) {
+		if node_match(line, col, node) {
 			// fmt.Printf("return (%s,%t)\n", "", true)
 			return "", true
 		}

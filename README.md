@@ -76,9 +76,7 @@ Outputs:
 # Installation
 
 ```bash
-git clone https://github.com/jceb/yaml-path.git
-cd yaml-path
-go install
+go install github.com/gidoichi/yaml-path@latest
 ```
 
 # Integration
@@ -88,7 +86,7 @@ go install
 Get a local copy of this repo :
 
 ```bash
-git clone https://github.com/jceb/yaml-path.git
+git clone https://github.com/gidoichi/yaml-path.git
 ```
 
 Install emacs `yaml-path` package:
@@ -150,7 +148,7 @@ Demo:
 
 ```lua
 use({
-    "jceb/yaml-path.nvim",
+    "gidoichi/yaml-path.nvim",
     run = { "go install" },
 })
 ```

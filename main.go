@@ -12,9 +12,11 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
+type Format string
+
 const (
-	Bosh = iota
-	JsonPath
+	Bosh     Format = "bosh"
+	JsonPath Format = "jsonpath"
 )
 
 type Path []*yaml.Node
@@ -22,9 +24,10 @@ type Path []*yaml.Node
 var (
 	line      = kingpin.Flag("line", "Cursor line").Default("0").Int()
 	col       = kingpin.Flag("col", "Cursor column").Default("0").Int()
+	filePath  = kingpin.Flag("path", "Set filepath, empty means stdin").Default("").String()
+	format    = kingpin.Flag("format", "Output format").Default(string(Bosh)).String()
 	sep       = kingpin.Flag("sep", "Set path separator").Default("/").String()
 	attr      = kingpin.Flag("name", "Set attribut name, empty to disable").Default("name").String()
-	filePath  = kingpin.Flag("path", "Set filepath, empty means stdin").Default("").String()
 	Separator = "/"
 	NameAttr  = "name"
 )
@@ -120,10 +123,35 @@ func (p Path) Reverse() (path Path) {
 	return p
 }
 
-func (p Path) ToString(format int) (strpath string, err error) {
+func (p Path) ToString(format Format) (strpath string, err error) {
 	switch format {
 	case Bosh:
-		panic("unimplemented")
+		for i := 0; i < len(p); i++ {
+			switch p[i].Kind {
+			case yaml.SequenceNode:
+				var j int
+				var c *yaml.Node
+				for j, c = range p[i].Content {
+					if c == p[i+1] {
+						break
+					}
+				}
+				if name := get_node_name(c); name != "" {
+					strpath += fmt.Sprintf("%s%s=%s", Separator, NameAttr, name)
+				} else {
+					strpath += fmt.Sprintf("%s%d", Separator, j)
+				}
+			case yaml.ScalarNode:
+				if p[i-1].Kind == yaml.ScalarNode {
+					continue
+				}
+				strpath += Separator + p[i].Value
+			case yaml.DocumentNode, yaml.MappingNode, yaml.AliasNode:
+				continue
+			default:
+				panic(fmt.Sprintf("unreachable: Kind=%d", p[i].Kind))
+			}
+		}
 
 	case JsonPath:
 		for i := 0; i < len(p); i++ {
@@ -150,13 +178,13 @@ func (p Path) ToString(format int) (strpath string, err error) {
 		}
 
 	default:
-		return "", errors.New(fmt.Sprintf("unsupported path format: %d", format))
+		return "", errors.New(fmt.Sprintf("unsupported path format: %s", format))
 	}
 
 	return strpath, nil
 }
 
-func PathAtPoint(line int, col int, in []byte) (path string, err error) {
+func PathAtPoint(line int, col int, in []byte, format Format) (path string, err error) {
 	node := &yaml.Node{}
 	if err := yaml.Unmarshal(in, node); err != nil {
 		return "", err
@@ -166,7 +194,7 @@ func PathAtPoint(line int, col int, in []byte) (path string, err error) {
 		if !m {
 			return "", fmt.Errorf("token not found at %d:%d", line, col)
 		}
-		return revp.Reverse().ToString(JsonPath)
+		return revp.Reverse().ToString(format)
 	}
 
 	return "", nil
@@ -206,7 +234,7 @@ func main() {
 	} else {
 		buff, _ = ioutil.ReadAll(os.Stdin)
 	}
-	path, err := PathAtPoint(*line, *col, buff)
+	path, err := PathAtPoint(*line, *col, buff, Format(*format))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

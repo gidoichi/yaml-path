@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -93,10 +94,13 @@ func findTokenAtPoint(line int, col int, node *yaml.Node) (revpath Path, match b
 			}
 		}
 
-	case yaml.ScalarNode:
+	case yaml.ScalarNode, yaml.AliasNode:
 		if node_match(line, col, node) {
 			return Path{node}, true
 		}
+
+	default:
+		panic(fmt.Sprintf("unreachable: Kind=%d", node.Kind))
 	}
 
 	return nil, false
@@ -116,14 +120,13 @@ func (p Path) Reverse() (path Path) {
 	return p
 }
 
-func (p Path) PathToString(format int) (strpath string) {
+func (p Path) ToString(format int) (strpath string, err error) {
 	switch format {
 	case Bosh:
 		panic("unimplemented")
 
 	case JsonPath:
 		for i := 0; i < len(p); i++ {
-			fmt.Println(p[i].Kind, ":", p[i].Value)
 			switch p[i].Kind {
 			case yaml.DocumentNode:
 				strpath += "$"
@@ -134,34 +137,36 @@ func (p Path) PathToString(format int) (strpath string) {
 						break
 					}
 				}
-			case yaml.MappingNode:
-				continue
 			case yaml.ScalarNode:
 				if p[i-1].Kind == yaml.ScalarNode {
 					continue
 				}
 				strpath += "." + p[i].Value
+			case yaml.MappingNode, yaml.AliasNode:
+				continue
 			default:
-				panic("unreachable")
+				panic(fmt.Sprintf("unreachable: Kind=%d", p[i].Kind))
 			}
 		}
 
 	default:
-		panic(fmt.Sprintf("unsupported path format: %d", format))
+		return "", errors.New(fmt.Sprintf("unsupported path format: %d", format))
 	}
 
-	return strpath
+	return strpath, nil
 }
 
 func PathAtPoint(line int, col int, in []byte) (path string, err error) {
 	node := &yaml.Node{}
-	yaml.Unmarshal(in, node)
+	if err := yaml.Unmarshal(in, node); err != nil {
+		return "", err
+	}
 	if node != nil {
 		revp, m := findTokenAtPoint(line, col, node)
 		if !m {
 			return "", fmt.Errorf("token not found at %d:%d", line, col)
 		}
-		return revp.Reverse().PathToString(JsonPath), nil
+		return revp.Reverse().ToString(JsonPath)
 	}
 
 	return "", nil

@@ -11,6 +11,13 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
+const (
+	Bosh = iota
+	JsonPath
+)
+
+type Path []*yaml.Node
+
 var (
 	line      = kingpin.Flag("line", "Cursor line").Default("0").Int()
 	col       = kingpin.Flag("col", "Cursor column").Default("0").Int()
@@ -22,9 +29,7 @@ var (
 )
 
 func node_match(line int, col int, node *yaml.Node) bool {
-	// fmt.Printf("line: %d=%d,  col : %d <= %d < %d, token=%s\n", node.Line, line, node.Column, col, node.Column+len(node.Value), node.Value)
 	if (node.Line == line) && (node.Column <= col) && (node.Column+len(node.Value) > col) {
-		// fmt.Printf("match on %s!!\n", node.Value)
 		return true
 	}
 	return false
@@ -50,67 +55,51 @@ func get_node_name(node *yaml.Node) string {
 	return ""
 }
 
-func findTokenAtPoint(line int, col int, node *yaml.Node) (addr string, match bool) {
+func findTokenAtPoint(line int, col int, node *yaml.Node) (revpath Path, match bool) {
 	switch node.Kind {
 	case yaml.DocumentNode:
-		// root node
 		for _, child := range node.Content {
-			a, m := findTokenAtPoint(line, col, child)
+			p, m := findTokenAtPoint(line, col, child)
 			if !m {
 				continue
 			}
-			// fmt.Printf("return (%s,%t)\n", "(doc)."+a, true)
-			return Separator + a, true
-		}
-
-	case yaml.MappingNode:
-		// map node
-		for i := 0; i < len(node.Content); i += 2 {
-			keyNode := node.Content[i]
-			if node_match(line, col, keyNode) {
-				// fmt.Printf("return (%s,%t)\n", keyNode.Value, true)
-				return keyNode.Value, true
-			}
-			valNode := node.Content[i+1]
-			a, m := findTokenAtPoint(line, col, valNode)
-			if !m {
-				continue
-			}
-			if a == "" {
-				// fmt.Printf("return (%s,%t)\n", keyNode.Value, true)
-				return keyNode.Value, true
-			} else {
-				// fmt.Printf("return (%s,%t)\n", keyNode.Value+"."+a, true)
-				return keyNode.Value + Separator + a, true
-			}
+			return append(p, node), true
 		}
 
 	case yaml.SequenceNode:
-		// array node
-		for idx, child := range node.Content {
-			a, m := findTokenAtPoint(line, col, child)
+		for _, child := range node.Content {
+			p, m := findTokenAtPoint(line, col, child)
 			if !m {
 				continue
 			}
-			name := get_node_name(child)
-			if name != "" {
-				// fmt.Printf("return (%s,%t)\n", fmt.Sprintf("[name=%s].%s", name, a), true)
-				return fmt.Sprintf("%s=%s%s%s", NameAttr, name, Separator, a), true
+			return append(p, node), true
+		}
+
+	case yaml.MappingNode:
+		for i := 0; i < len(node.Content); i += 2 {
+			keyNode := node.Content[i]
+			if node_match(line, col, keyNode) {
+				return Path{keyNode, node}, true
 			}
-			// fmt.Printf("return (%s,%t)\n", fmt.Sprintf("[%d].%s", idx, a), true)
-			return fmt.Sprintf("%d%s%s", idx, Separator, a), true
+			valNode := node.Content[i+1]
+			p, m := findTokenAtPoint(line, col, valNode)
+			if !m {
+				continue
+			}
+			if p == nil {
+				return Path{keyNode}, true
+			} else {
+				return append(p, keyNode, node), true
+			}
 		}
 
 	case yaml.ScalarNode:
-		// fmt.Printf("%s = %s\n", path, node.Value)
 		if node_match(line, col, node) {
-			// fmt.Printf("return (%s,%t)\n", "", true)
-			return "", true
+			return Path{node}, true
 		}
 	}
 
-	// fmt.Printf("return (%s,%t)\n", "", false)
-	return "", false
+	return nil, false
 }
 
 func Configure(sep string, nameAttr string) {
@@ -118,15 +107,61 @@ func Configure(sep string, nameAttr string) {
 	Separator = sep
 }
 
+func (p Path) Reverse() (path Path) {
+	len := len(p)
+	for i := len/2 - 1; i >= 0; i-- {
+		opp := len - i - 1
+		p[i], p[opp] = p[opp], p[i]
+	}
+	return p
+}
+
+func (p Path) PathToString(format int) (strpath string) {
+	switch format {
+	case Bosh:
+		panic("unimplemented")
+
+	case JsonPath:
+		for i := 0; i < len(p); i++ {
+			fmt.Println(p[i].Kind, ":", p[i].Value)
+			switch p[i].Kind {
+			case yaml.DocumentNode:
+				strpath += "$"
+			case yaml.SequenceNode:
+				for j, c := range p[i].Content {
+					if c == p[i+1] {
+						strpath += fmt.Sprintf("[%d]", j)
+						break
+					}
+				}
+			case yaml.MappingNode:
+				continue
+			case yaml.ScalarNode:
+				if p[i-1].Kind == yaml.ScalarNode {
+					continue
+				}
+				strpath += "." + p[i].Value
+			default:
+				panic("unreachable")
+			}
+		}
+
+	default:
+		panic(fmt.Sprintf("unsupported path format: %d", format))
+	}
+
+	return strpath
+}
+
 func PathAtPoint(line int, col int, in []byte) (path string, err error) {
 	node := &yaml.Node{}
 	yaml.Unmarshal(in, node)
 	if node != nil {
-		a, m := findTokenAtPoint(line, col, node)
-		if false == m {
+		revp, m := findTokenAtPoint(line, col, node)
+		if !m {
 			return "", fmt.Errorf("token not found at %d:%d", line, col)
 		}
-		return a, nil
+		return revp.Reverse().PathToString(JsonPath), nil
 	}
 
 	return "", nil

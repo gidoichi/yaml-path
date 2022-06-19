@@ -37,13 +37,14 @@ This tool is meant to be easily integrated in editor such as emacs.
 usage: yaml-path [<flags>]
 
 Flags:
-  -h, --help         Show context-sensitive help (also try --help-long and --help-man).
-      --line=0       Cursor line
-      --col=0        Cursor column
-      --sep="/"      Set path separator
-      --name="name"  Set attribut name, empty to disable
-      --path=""      Set filepath, empty means stdin
-      --version      Show application version.
+  -h, --help           Show context-sensitive help (also try --help-long and --help-man).
+      --line=0         Cursor line
+      --col=0          Cursor column
+      --path=""        Set filepath, empty means stdin
+      --format="bosh"  Output format
+      --sep="/"        Set path separator
+      --name="name"    Set attribut name, empty to disable
+      --version        Show application version.
 ```
 
 # Example

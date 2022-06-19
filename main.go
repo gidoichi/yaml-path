@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"runtime/debug"
 
@@ -234,7 +235,7 @@ func main() {
 	if *filePath != "" {
 		buff, err = ioutil.ReadFile(*filePath)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			os.Exit(1)
 		}
 	} else {
@@ -242,7 +243,7 @@ func main() {
 	}
 	path, err := PathAtPoint(*line, *col, buff, Format(*format))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 	fmt.Println(path)

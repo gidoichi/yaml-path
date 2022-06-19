@@ -59,6 +59,12 @@ func get_node_name(node *yaml.Node) string {
 	return ""
 }
 
+// findTokenAtPoint returns token path the arguments indicated.
+// Note that returned path is reversed order.
+//
+// For example, when yaml path is $.top.first[0].attr2, then
+// returned value is reversed order of (Document -> Mapping -> Scaler{"top"} ->
+// Mapping -> Scaler{"first"} -> Sequence -> Mapping -> Scaler{"attr2"}).
 func findTokenAtPoint(line int, col int, node *yaml.Node) (revpath Path, match bool) {
 	switch node.Kind {
 	case yaml.DocumentNode:

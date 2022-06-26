@@ -41,7 +41,7 @@ Flags:
       --line=0         Cursor line
       --col=0          Cursor column
       --path=""        Set filepath, empty means stdin
-      --format="bosh"  Output format
+      --format="bosh"  Output format (bosh, jsonpath)
       --sep="/"        Set path separator
       --name="name"    Set attribut name, empty to disable
       --version        Show application version.

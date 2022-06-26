@@ -26,7 +26,7 @@ var (
 	line      = kingpin.Flag("line", "Cursor line").Default("0").Int()
 	col       = kingpin.Flag("col", "Cursor column").Default("0").Int()
 	filePath  = kingpin.Flag("path", "Set filepath, empty means stdin").Default("").String()
-	format    = kingpin.Flag("format", "Output format").Default(string(Bosh)).String()
+	format    = kingpin.Flag("format", "Output format (bosh, jsonpath)").Default(string(Bosh)).String()
 	sep       = kingpin.Flag("sep", "Set path separator").Default("/").String()
 	attr      = kingpin.Flag("name", "Set attribut name, empty to disable").Default("name").String()
 	Separator = "/"
@@ -108,9 +108,6 @@ func findTokenAtPoint(line int, col int, node *yaml.Node) (revpath Path, match b
 		if node_match(line, col, node) {
 			return Path{node}, true
 		}
-
-	default:
-		panic(fmt.Sprintf("unreachable: Kind=%d", node.Kind))
 	}
 
 	return nil, false

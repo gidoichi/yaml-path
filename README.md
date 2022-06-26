@@ -90,10 +90,10 @@ Get a local copy of this repo :
 git clone https://github.com/gidoichi/yaml-path.git
 ```
 
-Install emacs `yaml-path` package:
+Load emacs `yaml-path` package :
 
-```bash
-cd emacs && make install
+```lisp
+(load "/path/to/yaml-path/emacs/yaml-path.el")
 ```
 
 Provided functions:

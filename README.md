@@ -35,12 +35,13 @@ This tool is meant to be easily integrated in editor such as emacs.
 
 ```
 USAGE:
-   yaml-path [global options] --line value
+   yaml-path [global options]
 
 GLOBAL OPTIONS:
    --col value     cursor column (default: 0)
-   --format value  output format. bosh or jsonpath) (default: "bosh")
+   --format value  output format. "bosh" or "jsonpath" (default: "bosh")
    --help, -h      show help (default: false)
+   --line value    cursor line (default: 0)
    --name value    set attribut name, empty to disable (default: "name")
    --path value    set filepath, empty means stdin
    --sep value     set path separator (default: "/")

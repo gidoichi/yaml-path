@@ -4,12 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"runtime/debug"
 
-	"github.com/prometheus/common/version"
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
+	"github.com/urfave/cli/v2"
 	yaml "gopkg.in/yaml.v3"
 )
 
@@ -23,12 +21,6 @@ const (
 type Path []*yaml.Node
 
 var (
-	line      = kingpin.Flag("line", "Cursor line").Default("0").Int()
-	col       = kingpin.Flag("col", "Cursor column").Default("0").Int()
-	filePath  = kingpin.Flag("path", "Set filepath, empty means stdin").Default("").String()
-	format    = kingpin.Flag("format", "Output format (bosh, jsonpath)").Default(string(Bosh)).String()
-	sep       = kingpin.Flag("sep", "Set path separator").Default("/").String()
-	attr      = kingpin.Flag("name", "Set attribut name, empty to disable").Default("name").String()
 	Separator = "/"
 	NameAttr  = "name"
 )
@@ -205,44 +197,74 @@ func PathAtPoint(line int, col int, in []byte, format Format) (path string, err 
 }
 
 func main() {
-	version.Version = "-"
-	version.Revision = "-"
-	version.Branch = "-"
-	version.BuildUser = "-"
-	version.BuildDate = "-"
+	app := cli.NewApp()
+	app.ArgsUsage = " "
+	app.Usage = "Reads yaml and output a path corresponding to line and column"
+	app.Flags = []cli.Flag{
+		&cli.UintFlag{
+			Name:  "line",
+			Usage: "cursor line",
+			Value: 0,
+		},
+		&cli.UintFlag{
+			Name:  "col",
+			Usage: "cursor column",
+			Value: 0,
+		},
+		&cli.StringFlag{
+			Name:  "path",
+			Usage: "set filepath, empty means stdin",
+		},
+		&cli.StringFlag{
+			Name:  "format",
+			Usage: "output format. \"bosh\" or \"jsonpath\"",
+			Value: "bosh",
+		},
+		&cli.StringFlag{
+			Name:  "sep",
+			Usage: "set path separator",
+			Value: "/",
+		},
+		&cli.StringFlag{
+			Name:  "name",
+			Usage: "set attribut name, empty to disable",
+			Value: "name",
+		},
+	}
+	app.HideHelpCommand = true
 	if info, ok := debug.ReadBuildInfo(); ok {
-		version.Version = info.Main.Version
-
-		m := make(map[string]string, len(info.Settings))
-		for _, s := range info.Settings {
-			m[s.Key] = s.Value
-		}
-		if v, ok := m["vcs.revision"]; ok {
-			version.Revision = v
-		}
+		app.Version = info.Main.Version
 	}
 
-	kingpin.Version(version.Print("yaml-path"))
-	kingpin.HelpFlag.Short('h')
-	kingpin.Parse()
+	app.Action = func(c *cli.Context) error {
+		var buf []byte
+		var err error
+		line := c.Uint("line")
+		col := c.Uint("col")
+		filePath := c.String("path")
+		format := c.String("format")
+		sep := c.String("sep")
+		attr := c.String("name")
 
-	Configure(*sep, *attr)
-	var buff []byte
-	var err error
-	if *filePath != "" {
-		buff, err = ioutil.ReadFile(*filePath)
+		Configure(sep, attr)
+		if filePath != "" {
+			if buf, err = ioutil.ReadFile(filePath); err != nil {
+				return cli.Exit(err, 1)
+			}
+		} else {
+			if buf, err = ioutil.ReadAll(os.Stdin); err != nil {
+				return cli.Exit(err, 1)
+			}
+		}
+
+		path, err := PathAtPoint(int(line), int(col), buf, Format(format))
 		if err != nil {
-			log.Println(err)
-			os.Exit(1)
+			return cli.Exit(err, 1)
 		}
-	} else {
-		buff, _ = ioutil.ReadAll(os.Stdin)
+		fmt.Println(path)
+
+		return nil
 	}
-	path, err := PathAtPoint(*line, *col, buff, Format(*format))
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-	fmt.Println(path)
-	os.Exit(0)
+
+	app.Run(os.Args)
 }

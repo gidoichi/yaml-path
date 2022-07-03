@@ -34,17 +34,17 @@ This tool is meant to be easily integrated in editor such as emacs.
 # Usage
 
 ```
-usage: yaml-path [<flags>]
+USAGE:
+   yaml-path [global options] --line value
 
-Flags:
-  -h, --help           Show context-sensitive help (also try --help-long and --help-man).
-      --line=0         Cursor line
-      --col=0          Cursor column
-      --path=""        Set filepath, empty means stdin
-      --format="bosh"  Output format (bosh, jsonpath)
-      --sep="/"        Set path separator
-      --name="name"    Set attribut name, empty to disable
-      --version        Show application version.
+GLOBAL OPTIONS:
+   --col value     cursor column (default: 0)
+   --format value  output format. bosh or jsonpath) (default: "bosh")
+   --help, -h      show help (default: false)
+   --name value    set attribut name, empty to disable (default: "name")
+   --path value    set filepath, empty means stdin
+   --sep value     set path separator (default: "/")
+   --version, -v   print the version (default: false)
 ```
 
 # Example

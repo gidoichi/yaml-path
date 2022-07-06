@@ -2,20 +2,6 @@
 
 <!-- toc -->
 
-- [What](#what)
-- [Why](#why)
-- [Usage](#usage)
-- [Example](#example)
-- [Installation](#installation)
-- [Integration](#integration)
-  - [Emacs](#emacs)
-  - [Vim](#vim)
-  - [Neovim](#neovim)
-  - [Intellij](#intellij)
-- [Note](#note)
-
-<!-- tocstop -->
-
 # What
 
 `yaml-path` reads given yaml on stdin and output a sort of 'path' corresponding
@@ -34,20 +20,8 @@ This tool is meant to be easily integrated in editor such as emacs.
 
 # Usage
 
-
-```
-USAGE:
-   yaml-path [global options]  
-
-GLOBAL OPTIONS:
-   --col value     cursor column (default: 0)
-   --format value  output format. "bosh" or "jsonpath" (default: "bosh")
-   --help, -h      show help (default: false)
-   --line value    cursor line (default: 0)
-   --name value    set attribut name, empty to disable (default: "name")
-   --path value    set filepath, empty means stdin
-   --sep value     set path separator (default: "/")
-   --version, -v   print the version (default: false)
+```{sh, echo=FALSE, comment=NA}
+./yaml-path --help | awk '/^[^ ]/{sec=$0} sec=="USAGE:"{print} sec=="GLOBAL OPTIONS:"{print}' | sed 's/^ *$//'
 ```
 
 # Example

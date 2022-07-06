@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -e
+
+exit_trap() {
+  set -- ${1:-} $?
+  trap '' EXIT HUP INT QUIT PIPE ALRM TERM
+  [ -d "${Tmp:-}" ] && rm -rf "${Tmp%/*}/_${Tmp##*/_}"
+  trap -  EXIT HUP INT QUIT PIPE ALRM TERM
+  exit "$1"
+}
+trap 'exit_trap' EXIT HUP INT QUIT PIPE ALRM TERM
+
+Tmp=$(mktemp -d -t "_${0##*/}.$$.XXXXXXXXXXX")
+
+touch README.md
+mv README.md "${Tmp}/" || true
+
+R -q -e 'knitr::knit("README.Rmd")'
+markdown-toc --maxdepth=2 --bullets=- -i README.md
+
+if diff README.md "${Tmp}/README.md" >/dev/null; then
+  exit 0
+else
+  c=$?
+fi
+case "${c}" in
+    1) echo 'README.md updated.' >&2; exit 1 ;;
+esac
+exit 1

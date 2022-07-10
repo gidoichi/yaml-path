@@ -1,4 +1,4 @@
-![go test](https://github.com/gidoichi/yaml-path/actions/workflows/go.yml/badge.svg)
+![go test](https://github.com/gidoichi/yaml-path/actions/workflows/go.yml/badge.svg?branch=main)
 
 **Table of Contents**
 

@@ -11,20 +11,44 @@ exit_trap() {
 }
 trap 'exit_trap' EXIT HUP INT QUIT PIPE ALRM TERM
 
+cp_to_dir() {
+  tmp="${1}"
+  path="${2}"
+  dir=$(d="${path%/*}"
+        if [ "${d}" != "${path}" ]; then
+          echo "${d}"
+        fi)
+
+  touch "${path}"
+  if [ -n "${dir}" ]; then
+    mkdir -p "${tmp}/${dir}"
+  fi
+  cp "${path}" "${tmp}/${dir}/"
+}
+
+check_updated() {
+  tmp="${1}"
+  path="${2}"
+
+  if diff "${path}" "${tmp}/${path}" >/dev/null; then
+    c='0'
+  else
+    c="${?}"
+  fi
+  case "${c}" in
+    1) echo "${path} updated." >&2; return 1 ;;
+  esac
+  return "${c}"
+}
+
 Tmp=$(mktemp -d -t "_${0##*/}.$$.XXXXXXXXXXX")
 
-touch README.md
-mv README.md "${Tmp}/" || true
+cp_to_dir "${Tmp}" README.md
+(set -x; R -q -e 'knitr::knit("README.Rmd")')
+(set -x; markdown-toc --maxdepth=2 --bullets=- -i README.md)
 
-R -q -e 'knitr::knit("README.Rmd")'
-markdown-toc --maxdepth=2 --bullets=- -i README.md
+cp_to_dir "${Tmp}" .github/workflows/go.yml
+(set -x; v=$(grep '^go ' < go.mod | sed 's/go //') yq -i '(.jobs.build.steps[] | select(.name == "Set up Go") | .with.go-version) = strenv(v)' .github/workflows/go.yml)
 
-if diff README.md "${Tmp}/README.md" >/dev/null; then
-  exit 0
-else
-  c=$?
-fi
-case "${c}" in
-    1) echo 'README.md updated.' >&2; exit 1 ;;
-esac
-exit 1
+check_updated "${Tmp}" README.md
+check_updated "${Tmp}" .github/workflows/go.yml

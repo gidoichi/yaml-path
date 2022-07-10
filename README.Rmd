@@ -1,3 +1,5 @@
+![go test](https://github.com/gidoichi/yaml-path/actions/workflows/go.yml/badge.svg)
+
 **Table of Contents**
 
 <!-- toc -->

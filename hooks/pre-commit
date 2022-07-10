@@ -48,7 +48,10 @@ cp_to_dir "${Tmp}" README.md
 (set -x; markdown-toc --maxdepth=2 --bullets=- -i README.md)
 
 cp_to_dir "${Tmp}" .github/workflows/go.yml
-(set -x; v=$(grep '^go ' < go.mod | sed 's/go //') yq -i '(.jobs.build.steps[] | select(.name == "Set up Go") | .with.go-version) = strenv(v)' .github/workflows/go.yml)
+v="$(grep '^go ' < go.mod | sed 's/go //')"
+(set -x; v="${v}" yq -i \
+  '(.jobs.build.steps[] | select(.name == "Set up Go") | .with.go-version) = strenv(v)' \
+  .github/workflows/go.yml)
 
 check_updated "${Tmp}" README.md
 check_updated "${Tmp}" .github/workflows/go.yml

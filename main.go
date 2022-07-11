@@ -25,6 +25,16 @@ var (
 	NameAttr  = "name"
 )
 
+type TokenNotFoundError struct {
+	Line int
+	Col  int
+	Err  error
+}
+
+func (e TokenNotFoundError) Error() string {
+	return fmt.Sprintf("token not found at %d:%d", e.Line, e.Col)
+}
+
 func node_match(line int, col int, node *yaml.Node) bool {
 	if (node.Line == line) && (node.Column <= col) && (node.Column+len(node.Value) > col) {
 		return true
@@ -169,31 +179,32 @@ func (p Path) ToString(format Format) (strpath string, err error) {
 			case yaml.MappingNode, yaml.AliasNode:
 				continue
 			default:
-				panic(fmt.Sprintf("unreachable: Kind=%d", p[i].Kind))
+				panic(fmt.Errorf("unreachable: Kind=%d", p[i].Kind))
 			}
 		}
 
 	default:
-		return "", errors.New(fmt.Sprintf("unsupported path format: %s", format))
+		return "", fmt.Errorf("unsupported path format: %s", format)
 	}
 
 	return strpath, nil
 }
 
-func PathAtPoint(line int, col int, in []byte, format Format) (path string, err error) {
+func PathAtPoint(line int, col int, in []byte) (path Path, err error) {
 	node := &yaml.Node{}
 	if err := yaml.Unmarshal(in, node); err != nil {
-		return "", err
-	}
-	if node != nil {
-		revp, m := findTokenAtPoint(line, col, node)
-		if !m {
-			return "", fmt.Errorf("token not found at %d:%d", line, col)
-		}
-		return revp.Reverse().ToString(format)
+		return nil, fmt.Errorf("cannot unmarshal yaml: %w", err)
 	}
 
-	return "", nil
+	rev, m := findTokenAtPoint(line, col, node)
+	if !m {
+		e := TokenNotFoundError{
+			Line: line,
+			Col:  col,
+		}
+		return nil, e
+	}
+	return rev.Reverse(), nil
 }
 
 func main() {
@@ -249,19 +260,26 @@ func main() {
 		Configure(sep, attr)
 		if filePath != "" {
 			if buf, err = ioutil.ReadFile(filePath); err != nil {
-				return cli.Exit(err, 1)
+				return cli.Exit(fmt.Errorf("read from file: %w", err), 1)
 			}
 		} else {
 			if buf, err = ioutil.ReadAll(os.Stdin); err != nil {
-				return cli.Exit(err, 1)
+				return cli.Exit(fmt.Errorf("read from stdin: %w", err), 1)
 			}
 		}
 
-		path, err := PathAtPoint(int(line), int(col), buf, Format(format))
+		path, err := PathAtPoint(int(line), int(col), buf)
 		if err != nil {
-			return cli.Exit(err, 1)
+			if errors.As(err, &TokenNotFoundError{}) {
+				return cli.Exit(err, 1)
+			}
+			return cli.Exit(fmt.Errorf("specify token path: %w", err), 1)
 		}
-		fmt.Println(path)
+		strpath, err := path.ToString(Format(format))
+		if err != nil {
+			return cli.Exit(fmt.Errorf("format path: %w", err), 1)
+		}
+		fmt.Println(strpath)
 
 		return nil
 	}

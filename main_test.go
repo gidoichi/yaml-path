@@ -23,23 +23,27 @@ var _ = Describe("Main", func() {
 
 	Context("Indicating at some token with Bosh format", func() {
 		It("should return the string path to the token in Bosh format.", func() {
-			path, err := main.PathAtPoint(5, 14, yaml, main.Bosh)
+			path, err := main.PathAtPoint(5, 14, yaml)
 			Expect(err).To(BeNil())
-			Expect(path).To(Equal("/top/first/name=myname/attr2"))
+			strpath, err := path.ToString(main.Bosh)
+			Expect(err).To(BeNil())
+			Expect(strpath).To(Equal("/top/first/name=myname/attr2"))
 		})
 	})
 
 	Context("Indicating at some token with JsonPath format", func() {
 		It("should return the string path to the token in JsonPath format.", func() {
-			path, err := main.PathAtPoint(5, 14, yaml, main.JsonPath)
+			path, err := main.PathAtPoint(5, 14, yaml)
 			Expect(err).To(BeNil())
-			Expect(path).To(Equal("$.top.first[0].attr2"))
+			strpath, err := path.ToString(main.JsonPath)
+			Expect(err).To(BeNil())
+			Expect(strpath).To(Equal("$.top.first[0].attr2"))
 		})
 	})
 
 	Context("Indicating at no token", func() {
 		It("should return token not found error.", func() {
-			_, err := main.PathAtPoint(6, 14, yaml, main.Bosh)
+			_, err := main.PathAtPoint(6, 14, yaml)
 			Expect(err).NotTo(BeNil())
 		})
 	})

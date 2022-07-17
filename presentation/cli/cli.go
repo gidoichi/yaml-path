@@ -25,8 +25,8 @@ func Run() {
 		},
 		&cli.UintFlag{
 			Name:  "col",
-			Usage: "cursor column",
-			Value: 1,
+			Usage: "cursor column, zero to disable",
+			Value: 0,
 		},
 		&cli.StringFlag{
 			Name:  "path",
@@ -75,7 +75,13 @@ func Run() {
 		}
 
 		var p path.Path
-		p.Path, err = searcher.PathAtPoint(int(line), int(col), buf)
+		var matcher searcher.NodeMatcher
+		if col == 0 {
+			matcher = searcher.NodeMatcherByLine{}.New(int(line))
+		} else {
+			matcher = searcher.NodeMatcherByLineAndCol{}.New(int(line), int(col))
+		}
+		p.Path, err = searcher.PathAtPoint(matcher, buf)
 		if err != nil {
 			if errors.As(err, &searcher.TokenNotFoundError{}) {
 				return cli.Exit(err, 1)

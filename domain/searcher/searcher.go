@@ -8,20 +8,54 @@ import (
 )
 
 type TokenNotFoundError struct {
-	Line int
-	Col  int
-	Err  error
+	Matcher NodeMatcher
 }
 
 func (e TokenNotFoundError) Error() string {
-	return fmt.Sprintf("token not found at %d:%d", e.Line, e.Col)
+	return fmt.Sprintf("token not found by %s", e.Matcher)
 }
 
-func node_match(line int, col int, node *yaml.Node) bool {
-	if (node.Line == line) && (node.Column <= col) && (node.Column+len(node.Value) > col) {
-		return true
-	}
-	return false
+type NodeMatcher interface {
+	Match(node *yaml.Node) bool
+	String() string
+}
+
+type NodeMatcherByLine struct {
+	line int
+}
+
+func (m NodeMatcherByLine) New(line int) *NodeMatcherByLine {
+	return &NodeMatcherByLine{line: line}
+}
+
+func (m *NodeMatcherByLine) Match(node *yaml.Node) bool {
+	return node.Line == m.line
+}
+
+func (m *NodeMatcherByLine) String() string {
+	return fmt.Sprintf("{line: %d}", m.line)
+}
+
+type NodeMatcherByLineAndCol struct {
+	line int
+	col  int
+}
+
+func (m NodeMatcherByLineAndCol) New(line, col int) *NodeMatcherByLineAndCol {
+	return &NodeMatcherByLineAndCol{line: line, col: col}
+}
+
+func (m *NodeMatcherByLineAndCol) Match(node *yaml.Node) bool {
+	return (node.Line == m.line) &&
+		(node.Column <= m.col) && (m.col < node.Column+len(node.Value))
+}
+
+func (m *NodeMatcherByLineAndCol) String() string {
+	return fmt.Sprintf("{line: %d, col: %d}", m.line, m.col)
+}
+
+func node_match(matcher NodeMatcher, node *yaml.Node) bool {
+	return matcher.Match(node)
 }
 
 // findTokenAtPoint returns token path the arguments indicated.
@@ -30,11 +64,11 @@ func node_match(line int, col int, node *yaml.Node) bool {
 // For example, when yaml path is $.top.first[0].attr2, then
 // returned value is reversed order of (Document -> Mapping -> Scaler{"top"} ->
 // Mapping -> Scaler{"first"} -> Sequence -> Mapping -> Scaler{"attr2"}).
-func findTokenAtPoint(line int, col int, node *yaml.Node) (revpath path.Path, match bool) {
+func findMatchedToken(matcher NodeMatcher, node *yaml.Node) (revpath path.Path, match bool) {
 	switch node.Kind {
 	case yaml.DocumentNode:
 		for _, child := range node.Content {
-			p, m := findTokenAtPoint(line, col, child)
+			p, m := findMatchedToken(matcher, child)
 			if !m {
 				continue
 			}
@@ -43,7 +77,7 @@ func findTokenAtPoint(line int, col int, node *yaml.Node) (revpath path.Path, ma
 
 	case yaml.SequenceNode:
 		for _, child := range node.Content {
-			p, m := findTokenAtPoint(line, col, child)
+			p, m := findMatchedToken(matcher, child)
 			if !m {
 				continue
 			}
@@ -53,11 +87,11 @@ func findTokenAtPoint(line int, col int, node *yaml.Node) (revpath path.Path, ma
 	case yaml.MappingNode:
 		for i := 0; i < len(node.Content); i += 2 {
 			keyNode := node.Content[i]
-			if node_match(line, col, keyNode) {
+			if node_match(matcher, keyNode) {
 				return path.Path{keyNode, node}, true
 			}
 			valNode := node.Content[i+1]
-			p, m := findTokenAtPoint(line, col, valNode)
+			p, m := findMatchedToken(matcher, valNode)
 			if !m {
 				continue
 			}
@@ -69,7 +103,7 @@ func findTokenAtPoint(line int, col int, node *yaml.Node) (revpath path.Path, ma
 		}
 
 	case yaml.ScalarNode, yaml.AliasNode:
-		if node_match(line, col, node) {
+		if node_match(matcher, node) {
 			return path.Path{node}, true
 		}
 	}
@@ -77,17 +111,16 @@ func findTokenAtPoint(line int, col int, node *yaml.Node) (revpath path.Path, ma
 	return nil, false
 }
 
-func PathAtPoint(line int, col int, in []byte) (path path.Path, err error) {
+func PathAtPoint(matcher NodeMatcher, in []byte) (path path.Path, err error) {
 	node := &yaml.Node{}
 	if err := yaml.Unmarshal(in, node); err != nil {
 		return nil, fmt.Errorf("cannot unmarshal yaml: %w", err)
 	}
 
-	rev, m := findTokenAtPoint(line, col, node)
+	rev, m := findMatchedToken(matcher, node)
 	if !m {
 		e := TokenNotFoundError{
-			Line: line,
-			Col:  col,
+			Matcher: matcher,
 		}
 		return nil, e
 	}

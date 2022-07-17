@@ -44,7 +44,7 @@ USAGE:
 GLOBAL OPTIONS:
    --bosh.name value  set attribut name for bosh format, empty to disable (default: "name")
    --bosh.sep value   set path separator for bosh format (default: "/")
-   --col value        cursor column (default: 1)
+   --col value        cursor column, zero to disable (default: 0)
    --format value     output format. "bosh" or "jsonpath" (default: "bosh")
    --help, -h         show help (default: false)
    --path value       set filepath, empty means stdin

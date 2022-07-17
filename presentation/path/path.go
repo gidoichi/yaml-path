@@ -102,7 +102,7 @@ func (p Path) ToString(format Format) (strpath string, err error) {
 				if err != nil {
 					return "", fmt.Errorf("get node: %w", err)
 				}
-				if prev.Kind == yaml.ScalarNode {
+				if prev.Kind == yaml.ScalarNode || prev.Kind == yaml.SequenceNode {
 					continue
 				}
 				strpath += Separator + cur.Value
@@ -138,7 +138,7 @@ func (p Path) ToString(format Format) (strpath string, err error) {
 				if err != nil {
 					return "", fmt.Errorf("get node: %w", err)
 				}
-				if prev.Kind == yaml.ScalarNode {
+				if prev.Kind == yaml.ScalarNode || prev.Kind == yaml.SequenceNode {
 					continue
 				}
 				strpath += cur.Value

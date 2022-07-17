@@ -14,18 +14,19 @@ import (
 
 func Run() {
 	app := cli.NewApp()
-	app.ArgsUsage = " "
-	app.Usage = "Reads yaml and output a path corresponding to line and column"
+	app.ArgsUsage = "--line value"
+	app.Usage = "Reads yaml and output a path corresponding to line (and column)"
 	app.Flags = []cli.Flag{
 		&cli.UintFlag{
-			Name:  "line",
-			Usage: "cursor line",
-			Value: 0,
+			Name:     "line",
+			Usage:    "cursor line",
+			Required: true,
+			Hidden:   true,
 		},
 		&cli.UintFlag{
 			Name:  "col",
 			Usage: "cursor column",
-			Value: 0,
+			Value: 1,
 		},
 		&cli.StringFlag{
 			Name:  "path",
@@ -37,13 +38,13 @@ func Run() {
 			Value: "bosh",
 		},
 		&cli.StringFlag{
-			Name:  "sep",
-			Usage: "set path separator",
+			Name:  "bosh.sep",
+			Usage: "set path separator for bosh format",
 			Value: "/",
 		},
 		&cli.StringFlag{
-			Name:  "name",
-			Usage: "set attribut name, empty to disable",
+			Name:  "bosh.name",
+			Usage: "set attribut name for bosh format, empty to disable",
 			Value: "name",
 		},
 	}
@@ -59,8 +60,8 @@ func Run() {
 		col := c.Uint("col")
 		filePath := c.String("path")
 		format := c.String("format")
-		sep := c.String("sep")
-		attr := c.String("name")
+		sep := c.String("bosh.sep")
+		attr := c.String("bosh.name")
 
 		path.Configure(sep, attr)
 		if filePath != "" {

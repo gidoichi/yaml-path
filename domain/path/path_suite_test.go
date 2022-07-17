@@ -1,4 +1,4 @@
-package main_test
+package path_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestYamlPath(t *testing.T) {
+func TestPath(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "YamlPath Suite")
+	RunSpecs(t, "Path Suite")
 }

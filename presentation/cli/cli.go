@@ -15,7 +15,7 @@ import (
 func Run() {
 	app := cli.NewApp()
 	app.ArgsUsage = "--line value"
-	app.Usage = "Reads yaml and output a path corresponding to line (and column)"
+	app.Usage = "Reads yaml and output a path corresponding to leftmost token at line, or at (line, col)"
 	app.Flags = []cli.Flag{
 		&cli.UintFlag{
 			Name:     "line",

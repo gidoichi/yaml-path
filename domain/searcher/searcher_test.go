@@ -25,7 +25,7 @@ var _ = Describe("Searcher", func() {
 
 	Context("When indicating at some token", func() {
 		It("should return the path to the token.", func() {
-			matcher := searcher.NodeMatcherByLineAndCol{}.New(5, 14)
+			matcher := searcher.NewNodeMatcherByLineAndCol(5, 14)
 			path, err := searcher.PathAtPoint(matcher, data)
 
 			Expect(err).To(BeNil())
@@ -48,7 +48,7 @@ var _ = Describe("Searcher", func() {
 
 	Context("When indicating at no token", func() {
 		It("should return token not found error.", func() {
-			matcher := searcher.NodeMatcherByLineAndCol{}.New(6, 14)
+			matcher := searcher.NewNodeMatcherByLineAndCol(6, 14)
 			_, err := searcher.PathAtPoint(matcher, data)
 
 			Expect(err).To(BeAssignableToTypeOf(searcher.TokenNotFoundError{}))
@@ -57,7 +57,7 @@ var _ = Describe("Searcher", func() {
 
 	Context("When invalid yaml file is inputted", func() {
 		It("should return some error.", func() {
-			matcher := searcher.NodeMatcherByLineAndCol{}.New(1, 1)
+			matcher := searcher.NewNodeMatcherByLineAndCol(1, 1)
 			_, err := searcher.PathAtPoint(matcher, []byte(`top: -`))
 
 			Expect(err).NotTo(BeNil())

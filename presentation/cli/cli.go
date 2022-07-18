@@ -77,9 +77,9 @@ func Run() {
 		var p path.Path
 		var matcher searcher.NodeMatcher
 		if col == 0 {
-			matcher = searcher.NodeMatcherByLine{}.New(int(line))
+			matcher = searcher.NewNodeMatcherByLine(int(line))
 		} else {
-			matcher = searcher.NodeMatcherByLineAndCol{}.New(int(line), int(col))
+			matcher = searcher.NewNodeMatcherByLineAndCol(int(line), int(col))
 		}
 		p.Path, err = searcher.PathAtPoint(matcher, buf)
 		if err != nil {

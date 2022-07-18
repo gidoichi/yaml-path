@@ -15,10 +15,6 @@ type NodeMatcherByLine struct {
 	line int
 }
 
-func (m NodeMatcherByLine) New(line int) *NodeMatcherByLine {
-	return &NodeMatcherByLine{line: line}
-}
-
 func (m *NodeMatcherByLine) Match(node *yaml.Node) bool {
 	return node.Line == m.line
 }
@@ -27,13 +23,13 @@ func (m *NodeMatcherByLine) String() string {
 	return fmt.Sprintf("{line: %d}", m.line)
 }
 
+func NewNodeMatcherByLine(line int) *NodeMatcherByLine {
+	return &NodeMatcherByLine{line: line}
+}
+
 type NodeMatcherByLineAndCol struct {
 	line int
 	col  int
-}
-
-func (m NodeMatcherByLineAndCol) New(line, col int) *NodeMatcherByLineAndCol {
-	return &NodeMatcherByLineAndCol{line: line, col: col}
 }
 
 func (m *NodeMatcherByLineAndCol) Match(node *yaml.Node) bool {
@@ -43,4 +39,8 @@ func (m *NodeMatcherByLineAndCol) Match(node *yaml.Node) bool {
 
 func (m *NodeMatcherByLineAndCol) String() string {
 	return fmt.Sprintf("{line: %d, col: %d}", m.line, m.col)
+}
+
+func NewNodeMatcherByLineAndCol(line, col int) *NodeMatcherByLineAndCol {
+	return &NodeMatcherByLineAndCol{line: line, col: col}
 }

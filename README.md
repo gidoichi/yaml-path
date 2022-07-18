@@ -1,3 +1,8 @@
+<!-- Edit README.Rmd instead of README.md. DON'T EDIT README.md DIRECTLY. -->
+<!-- README.md is generated from README.Rmd using following generator: -->
+<!-- - knitr: https://github.com/yihui/knitr -->
+<!-- - markdown-toc: https://github.com/jonschlinkert/markdown-toc -->
+
 ![go test](https://github.com/gidoichi/yaml-path/actions/workflows/go.yml/badge.svg?branch=main)
 
 **Table of Contents**
@@ -169,6 +174,3 @@ use({
 
 The current implementation relies on a very savage hack of golang
 [yaml](https://github.com/go-yaml/yaml) library vendored in this project.
-
-<!-- Local Variables: -->
-<!-- End: -->

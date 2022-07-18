@@ -39,17 +39,16 @@ This tool is meant to be easily integrated in editor such as emacs.
 
 ```
 USAGE:
-   yaml-path [global options]  
+   yaml-path [global options] --line value
 
 GLOBAL OPTIONS:
-   --col value     cursor column (default: 0)
-   --format value  output format. "bosh" or "jsonpath" (default: "bosh")
-   --help, -h      show help (default: false)
-   --line value    cursor line (default: 0)
-   --name value    set attribut name, empty to disable (default: "name")
-   --path value    set filepath, empty means stdin
-   --sep value     set path separator (default: "/")
-   --version, -v   print the version (default: false)
+   --bosh.name value  set attribut name for bosh format, empty to disable (default: "name")
+   --bosh.sep value   set path separator for bosh format (default: "/")
+   --col value        cursor column, zero to disable (default: 0)
+   --format value     output format. "bosh" or "jsonpath" (default: "bosh")
+   --help, -h         show help (default: false)
+   --path value       set filepath, empty means stdin
+   --version, -v      print the version (default: false)
 ```
 
 # Example

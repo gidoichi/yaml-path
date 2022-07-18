@@ -59,7 +59,8 @@ var _ = Describe("Path", func() {
 
 	Context("When path is converted to bosh format", func() {
 		It("should converted to bosh format.", func() {
-			p, err := dsearcher.PathAtPoint(5, 14, data)
+			matcher := dsearcher.NodeMatcherByLineAndCol{}.New(5, 14)
+			p, err := dsearcher.PathAtPoint(matcher, data)
 			Expect(err).To(BeNil())
 
 			strpath, err := path.Path{Path: p}.ToString(path.Bosh)
@@ -71,7 +72,8 @@ var _ = Describe("Path", func() {
 
 	Context("When path is converted to jsonpath format", func() {
 		It("should converted to jsonpath format.", func() {
-			p, err := dsearcher.PathAtPoint(5, 14, data)
+			matcher := dsearcher.NodeMatcherByLineAndCol{}.New(5, 14)
+			p, err := dsearcher.PathAtPoint(matcher, data)
 			Expect(err).To(BeNil())
 
 			strpath, err := path.Path{Path: p}.ToString(path.JsonPath)

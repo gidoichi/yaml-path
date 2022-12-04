@@ -27,7 +27,7 @@
   (interactive)
   (let* ((path (yaml-path-get-path-at-point)))
     (kill-new path)
-    (message "%s" (yaml-path-get-path-at-point)))
+    (message "%s" path))
   )
 
 (defun yaml-path-get-path-at-point(&optional pline pcol)

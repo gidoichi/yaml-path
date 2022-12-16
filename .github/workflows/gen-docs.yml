@@ -1,10 +1,10 @@
-name: Generate Documents
+name: Update Documents
 on: push
 jobs:
   generate:
     runs-on: ubuntu-latest
     container:
-      image: rocker/r-rmd
+      image: gidoichi/r-rmd
     steps:
       - uses: actions/checkout@v3
         with:
@@ -23,8 +23,6 @@ jobs:
           set -eux
           cd repo
           R -q -e 'knitr::knit("README.Rmd")'
-          # install.packages("xpectr")
-          # xpectr:::render_toc("README.md")
       - uses: actions/upload-artifact@master
         with:
           name: updated-repo
@@ -42,10 +40,21 @@ jobs:
       - uses: actions/checkout@v3
         with:
           path: repo
-      - name: Show diff
+      - name: Update files
         run: |
           set -eux
           cd repo
           find -mindepth 1 -maxdepth 1 -not -name '.git' | xargs rm -rf
           find ../updated-repo -mindepth 1 -maxdepth 1 -not -name '.git' | xargs -I {} mv {} .
+      - name: Show file contents
+        run: |
+          cd repo
+          git diff --name-only |
+          while IFS= read -r file; do
+            (set -x; cat "${file}")
+          done
+      - name: Show diff
+        run: |
+          set -eux
+          cd repo
           git diff --exit-code --color

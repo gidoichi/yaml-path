@@ -23,6 +23,8 @@ jobs:
           set -eux
           cd repo
           R -q -e 'knitr::knit("README.Rmd")'
+          # install.packages("xpectr")
+          # xpectr:::render_toc("README.md")
       - uses: actions/upload-artifact@master
         with:
           name: updated-repo

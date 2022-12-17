@@ -7,11 +7,14 @@ cat <<-EOF | sed -e 's/^/<!-- /' -e 's/$/ -->/'
 	EOF
 ```
 
-![go test](https://github.com/gidoichi/yaml-path/actions/workflows/go.yml/badge.svg?branch=main)
+![test](https://github.com/gidoichi/yaml-path/actions/workflows/test.yml/badge.svg?branch=main)
+![gen docs](https://github.com/gidoichi/yaml-path/actions/workflows/gen-docs.yml/badge.svg?branch=main)
 
 **Table of Contents**
 
-<!-- toc -->
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+xpectr:::render_toc("README.Rmd", toc_depth=2)
+```
 
 # What
 

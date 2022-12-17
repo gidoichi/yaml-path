@@ -3,11 +3,10 @@
 <!-- - knitr: https://github.com/yihui/knitr -->
 <!-- - markdown-toc: https://github.com/jonschlinkert/markdown-toc -->
 
-![go test](https://github.com/gidoichi/yaml-path/actions/workflows/go.yml/badge.svg?branch=main)
+![test](https://github.com/gidoichi/yaml-path/actions/workflows/test.yml/badge.svg?branch=main)
+![gen docs](https://github.com/gidoichi/yaml-path/actions/workflows/gen-docs.yml/badge.svg?branch=main)
 
 **Table of Contents**
-
-<!-- toc -->
 
 - [What](#what)
 - [Why](#why)
@@ -15,13 +14,11 @@
 - [Example](#example)
 - [Installation](#installation)
 - [Integration](#integration)
-  - [Emacs](#emacs)
-  - [Vim](#vim)
-  - [Neovim](#neovim)
-  - [Intellij](#intellij)
+    - [Emacs](#emacs)
+    - [Vim](#vim)
+    - [Neovim](#neovim)
+    - [Intellij](#intellij)
 - [Note](#note)
-
-<!-- tocstop -->
 
 # What
 

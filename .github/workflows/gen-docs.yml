@@ -1,0 +1,60 @@
+name: Update Documents
+on: push
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    container:
+      image: gidoichi/r-rmd
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: repo
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.17"
+      - name: Build
+        run: |
+          set -eux
+          cd repo
+          go build -v
+      - name: Generate README.md
+        run: |
+          set -eux
+          cd repo
+          R -q -e 'knitr::knit("README.Rmd")'
+      - uses: actions/upload-artifact@master
+        with:
+          name: updated-repo
+          path: repo/
+  show:
+    needs: generate
+    runs-on: ubuntu-latest
+    container:
+      image: alpine/git
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: updated-repo
+          path: updated-repo
+      - uses: actions/checkout@v3
+        with:
+          path: repo
+      - name: Update files
+        run: |
+          set -eux
+          cd repo
+          find -mindepth 1 -maxdepth 1 -not -name '.git' | xargs rm -rf
+          find ../updated-repo -mindepth 1 -maxdepth 1 -not -name '.git' | xargs -I {} mv {} .
+      - name: Show file contents
+        run: |
+          cd repo
+          git diff --name-only |
+          while IFS= read -r file; do
+            (set -x; cat "${file}")
+          done
+      - name: Show diff
+        run: |
+          set -eux
+          cd repo
+          git diff --exit-code --color

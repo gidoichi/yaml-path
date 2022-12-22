@@ -1,7 +1,7 @@
 <!-- Edit README.Rmd instead of README.md. DON'T EDIT README.md DIRECTLY. -->
 <!-- README.md is generated from README.Rmd using following generator: -->
 <!-- - knitr: https://github.com/yihui/knitr -->
-<!-- - markdown-toc: https://github.com/jonschlinkert/markdown-toc -->
+<!-- - xpectr: https://github.com/LudvigOlsen/xpectr -->
 
 ![test](https://github.com/gidoichi/yaml-path/actions/workflows/test.yml/badge.svg?branch=main)
 ![gen docs](https://github.com/gidoichi/yaml-path/actions/workflows/gen-docs.yml/badge.svg?branch=main)

@@ -1,14 +1,13 @@
 package cli
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"runtime/debug"
 
-	"github.com/gidoichi/yaml-path/domain/searcher"
-	"github.com/gidoichi/yaml-path/presentation/path"
+	dmatcher "github.com/gidoichi/yaml-path/domain/matcher"
+	ppath "github.com/gidoichi/yaml-path/presentation/path"
 	"github.com/urfave/cli/v2"
 )
 
@@ -63,7 +62,7 @@ func Run() {
 		sep := c.String("bosh.sep")
 		attr := c.String("bosh.name")
 
-		path.Configure(sep, attr)
+		ppath.Configure(sep, attr)
 		if filePath != "" {
 			if buf, err = ioutil.ReadFile(filePath); err != nil {
 				return cli.Exit(fmt.Errorf("read from file: %w", err), 1)
@@ -74,23 +73,29 @@ func Run() {
 			}
 		}
 
-		var p path.Path
-		var matcher searcher.NodeMatcher
+		var matcher dmatcher.NodeMatcher
 		if col == 0 {
-			matcher = searcher.NewNodeMatcherByLine(int(line))
+			matcher = dmatcher.NewNodeMatcherByLine(int(line))
 		} else {
-			matcher = searcher.NewNodeMatcherByLineAndCol(int(line), int(col))
+			matcher = dmatcher.NewNodeMatcherByLineAndCol(int(line), int(col))
 		}
-		p.Path, err = searcher.PathAtPoint(matcher, buf)
+		path, err := ppath.NewPath(buf, matcher)
 		if err != nil {
-			if errors.As(err, &searcher.TokenNotFoundError{}) {
-				return cli.Exit(err, 1)
-			}
-			return cli.Exit(fmt.Errorf("specify token path: %w", err), 1)
+			return cli.Exit(fmt.Errorf("resolve path: %w", err), 1)
 		}
-		strpath, err := p.ToString(path.Format(format))
+
+		var formatter ppath.PathFormatter
+		switch format {
+		case "Bosh":
+			formatter = &ppath.PathFormatterBosh{}
+		case "JsonPath":
+			formatter = &ppath.PathFormatterJSONPath{}
+		default:
+			return fmt.Errorf("unsupported path format: %s", format)
+		}
+		strpath, err := path.ToString(formatter)
 		if err != nil {
-			return cli.Exit(fmt.Errorf("format path: %w", err), 1)
+			return cli.Exit(fmt.Errorf("unsupported path format: %s", format), 1)
 		}
 		fmt.Println(strpath)
 

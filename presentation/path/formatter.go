@@ -3,7 +3,7 @@ package path
 import (
 	"fmt"
 
-	yaml "gopkg.in/yaml.v3"
+	yamlv3 "gopkg.in/yaml.v3"
 )
 
 type PathFormatter interface {
@@ -22,9 +22,9 @@ func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 			return "", fmt.Errorf("get node: %w", err)
 		}
 		switch cur.Kind {
-		case yaml.SequenceNode:
+		case yamlv3.SequenceNode:
 			var j int
-			var c *yaml.Node
+			var c *yamlv3.Node
 			next, err := path.Get(i + 1)
 			if err != nil {
 				return "", fmt.Errorf("get node: %w", err)
@@ -39,16 +39,16 @@ func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 			} else {
 				strpath += fmt.Sprintf("%s%d", f.Separator, j)
 			}
-		case yaml.ScalarNode:
+		case yamlv3.ScalarNode:
 			prev, err := path.Get(i - 1)
 			if err != nil {
 				return "", fmt.Errorf("get node: %w", err)
 			}
-			if prev.Kind == yaml.ScalarNode || prev.Kind == yaml.SequenceNode {
+			if prev.Kind == yamlv3.ScalarNode || prev.Kind == yamlv3.SequenceNode {
 				continue
 			}
 			strpath += f.Separator + cur.Value
-		case yaml.DocumentNode, yaml.MappingNode, yaml.AliasNode:
+		case yamlv3.DocumentNode, yamlv3.MappingNode, yamlv3.AliasNode:
 			continue
 		default:
 			return "", fmt.Errorf("invalid path: %s", path)
@@ -67,9 +67,9 @@ func (f *PathFormatterJSONPath) ToString(path *Path) (strpath string, err error)
 			return "", fmt.Errorf("get node: %w", err)
 		}
 		switch cur.Kind {
-		case yaml.DocumentNode:
+		case yamlv3.DocumentNode:
 			strpath += "$"
-		case yaml.SequenceNode:
+		case yamlv3.SequenceNode:
 			next, err := path.Get(i + 1)
 			if err != nil {
 				return "", fmt.Errorf("get node: %w", err)
@@ -80,16 +80,16 @@ func (f *PathFormatterJSONPath) ToString(path *Path) (strpath string, err error)
 					break
 				}
 			}
-		case yaml.ScalarNode:
+		case yamlv3.ScalarNode:
 			prev, err := path.Get(i - 1)
 			if err != nil {
 				return "", fmt.Errorf("get node: %w", err)
 			}
-			if prev.Kind == yaml.ScalarNode || prev.Kind == yaml.SequenceNode {
+			if prev.Kind == yamlv3.ScalarNode || prev.Kind == yamlv3.SequenceNode {
 				continue
 			}
 			strpath += cur.Value
-		case yaml.MappingNode, yaml.AliasNode:
+		case yamlv3.MappingNode, yamlv3.AliasNode:
 			strpath += "."
 		default:
 			return "", fmt.Errorf("invalid path: %s", path)

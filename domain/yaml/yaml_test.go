@@ -23,7 +23,7 @@ var _ = Describe("YAML", func() {
     child3: value3
 `)
 
-	var _ = Describe("NewYAML()", func() {
+	Describe("NewYAML()", func() {
 		Context("When given valid yaml", func() {
 			It("should return parsed yaml.", func() {
 				_, err := dyaml.NewYAML(data)

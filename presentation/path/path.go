@@ -7,7 +7,7 @@ import (
 
 	dmatcher "github.com/gidoichi/yaml-path/domain/matcher"
 	dyaml "github.com/gidoichi/yaml-path/domain/yaml"
-	yaml "gopkg.in/yaml.v3"
+	yamlv3 "gopkg.in/yaml.v3"
 )
 
 type Format string
@@ -25,7 +25,7 @@ func (p *Path) Len() int {
 	return len(p.Path)
 }
 
-func (p *Path) Get(i int) (node *yaml.Node, err error) {
+func (p *Path) Get(i int) (node *yamlv3.Node, err error) {
 	if p.Len() <= i {
 		return nil, fmt.Errorf("index out of range: %d", i)
 	}
@@ -49,8 +49,8 @@ func NewPath(in []byte, matcher dmatcher.NodeMatcher) (path *Path, err error) {
 	}, nil
 }
 
-func (p *Path) get_node_name(node *yaml.Node, value string) string {
-	if node.Kind != yaml.MappingNode {
+func (p *Path) get_node_name(node *yamlv3.Node, value string) string {
+	if node.Kind != yamlv3.MappingNode {
 		return ""
 	}
 
@@ -60,7 +60,7 @@ func (p *Path) get_node_name(node *yaml.Node, value string) string {
 		if keyNode.Value != value {
 			continue
 		}
-		if valNode.Kind != yaml.ScalarNode {
+		if valNode.Kind != yamlv3.ScalarNode {
 			return ""
 		}
 		return valNode.Value

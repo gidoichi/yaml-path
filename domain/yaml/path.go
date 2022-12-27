@@ -1,10 +1,10 @@
 package yaml
 
 import (
-	yaml "gopkg.in/yaml.v3"
+	yamlv3 "gopkg.in/yaml.v3"
 )
 
-type Path []*yaml.Node
+type Path []*yamlv3.Node
 
 func (p Path) Get(i int) *Node {
 	if i < 0 && p.Len() < i {

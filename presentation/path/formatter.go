@@ -10,7 +10,10 @@ type PathFormatter interface {
 	ToString(path *Path) (strpath string, err error)
 }
 
-type PathFormatterBosh struct{}
+type PathFormatterBosh struct {
+	Separator string
+	NameAttr  string
+}
 
 func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 	for i := 0; i < path.Len(); i++ {
@@ -31,10 +34,10 @@ func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 					break
 				}
 			}
-			if name := path.get_node_name(c); name != "" {
-				strpath += fmt.Sprintf("%s%s=%s", Separator, NameAttr, name)
+			if name := path.get_node_name(c, f.NameAttr); name != "" {
+				strpath += fmt.Sprintf("%s%s=%s", f.Separator, f.NameAttr, name)
 			} else {
-				strpath += fmt.Sprintf("%s%d", Separator, j)
+				strpath += fmt.Sprintf("%s%d", f.Separator, j)
 			}
 		case yaml.ScalarNode:
 			prev, err := path.Get(i - 1)
@@ -44,7 +47,7 @@ func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 			if prev.Kind == yaml.ScalarNode || prev.Kind == yaml.SequenceNode {
 				continue
 			}
-			strpath += Separator + cur.Value
+			strpath += f.Separator + cur.Value
 		case yaml.DocumentNode, yaml.MappingNode, yaml.AliasNode:
 			continue
 		default:

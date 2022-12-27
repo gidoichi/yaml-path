@@ -59,10 +59,24 @@ func Run() {
 		col := c.Uint("col")
 		filePath := c.String("path")
 		format := c.String("format")
-		sep := c.String("bosh.sep")
-		attr := c.String("bosh.name")
 
-		ppath.Configure(sep, attr)
+		var formatter ppath.PathFormatter
+		switch format {
+		case "bosh":
+			f := &ppath.PathFormatterBosh{}
+			if sep := c.String("bosh.sep"); sep != "" {
+				f.Separator = sep
+			}
+			if attr := c.String("bosh.name"); attr != "" {
+				f.NameAttr = attr
+			}
+			formatter = f
+		case "jsonpath":
+			formatter = &ppath.PathFormatterJSONPath{}
+		default:
+			return cli.Exit(fmt.Errorf("unsupported path format: %s", format), 1)
+		}
+
 		if filePath != "" {
 			if buf, err = ioutil.ReadFile(filePath); err != nil {
 				return cli.Exit(fmt.Errorf("read from file: %w", err), 1)
@@ -83,19 +97,9 @@ func Run() {
 		if err != nil {
 			return cli.Exit(fmt.Errorf("resolve path: %w", err), 1)
 		}
-
-		var formatter ppath.PathFormatter
-		switch format {
-		case "Bosh":
-			formatter = &ppath.PathFormatterBosh{}
-		case "JsonPath":
-			formatter = &ppath.PathFormatterJSONPath{}
-		default:
-			return fmt.Errorf("unsupported path format: %s", format)
-		}
 		strpath, err := path.ToString(formatter)
 		if err != nil {
-			return cli.Exit(fmt.Errorf("unsupported path format: %s", format), 1)
+			return cli.Exit(fmt.Errorf("path formatting error: %s", format), 1)
 		}
 		fmt.Println(strpath)
 

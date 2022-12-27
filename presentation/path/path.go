@@ -33,16 +33,6 @@ func (p *Path) Get(i int) (node *yaml.Node, err error) {
 	return p.Path[i], nil
 }
 
-var (
-	Separator = "/"
-	NameAttr  = "name"
-)
-
-func Configure(sep string, nameAttr string) {
-	NameAttr = nameAttr
-	Separator = sep
-}
-
 func NewPath(in []byte, matcher dmatcher.NodeMatcher) (path *Path, err error) {
 	yaml, err := dyaml.NewYAML(in)
 	if err != nil {
@@ -59,7 +49,7 @@ func NewPath(in []byte, matcher dmatcher.NodeMatcher) (path *Path, err error) {
 	}, nil
 }
 
-func (p *Path) get_node_name(node *yaml.Node) string {
+func (p *Path) get_node_name(node *yaml.Node, value string) string {
 	if node.Kind != yaml.MappingNode {
 		return ""
 	}
@@ -67,7 +57,7 @@ func (p *Path) get_node_name(node *yaml.Node) string {
 	for i := 0; i < len(node.Content); i += 2 {
 		keyNode := node.Content[i]
 		valNode := node.Content[i+1]
-		if keyNode.Value != NameAttr {
+		if keyNode.Value != value {
 			continue
 		}
 		if valNode.Kind != yaml.ScalarNode {

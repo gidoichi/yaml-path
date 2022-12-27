@@ -68,7 +68,7 @@ top:
     - value3
   second:
     child1: value1
-    child1: value2
+    child2: value2
     child3: value3
 ```
 

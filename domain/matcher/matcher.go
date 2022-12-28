@@ -1,13 +1,13 @@
-package searcher
+package matcher
 
 import (
 	"fmt"
 
-	yaml "gopkg.in/yaml.v3"
+	yamlv3 "gopkg.in/yaml.v3"
 )
 
 type NodeMatcher interface {
-	Match(node *yaml.Node) bool
+	Match(node *yamlv3.Node) bool
 	String() string
 }
 
@@ -15,7 +15,7 @@ type NodeMatcherByLine struct {
 	line int
 }
 
-func (m *NodeMatcherByLine) Match(node *yaml.Node) bool {
+func (m *NodeMatcherByLine) Match(node *yamlv3.Node) bool {
 	return node.Line == m.line
 }
 
@@ -32,7 +32,7 @@ type NodeMatcherByLineAndCol struct {
 	col  int
 }
 
-func (m *NodeMatcherByLineAndCol) Match(node *yaml.Node) bool {
+func (m *NodeMatcherByLineAndCol) Match(node *yamlv3.Node) bool {
 	return (node.Line == m.line) &&
 		(node.Column <= m.col) && (m.col < node.Column+len(node.Value))
 }

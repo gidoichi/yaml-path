@@ -1,14 +1,13 @@
 package cli
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"runtime/debug"
 
-	"github.com/gidoichi/yaml-path/domain/searcher"
-	"github.com/gidoichi/yaml-path/presentation/path"
+	dmatcher "github.com/gidoichi/yaml-path/domain/matcher"
+	ppath "github.com/gidoichi/yaml-path/presentation/path"
 	"github.com/urfave/cli/v2"
 )
 
@@ -60,10 +59,24 @@ func Run() {
 		col := c.Uint("col")
 		filePath := c.String("path")
 		format := c.String("format")
-		sep := c.String("bosh.sep")
-		attr := c.String("bosh.name")
 
-		path.Configure(sep, attr)
+		var formatter ppath.PathFormatter
+		switch format {
+		case "bosh":
+			f := &ppath.PathFormatterBosh{}
+			if sep := c.String("bosh.sep"); sep != "" {
+				f.Separator = sep
+			}
+			if attr := c.String("bosh.name"); attr != "" {
+				f.NameAttr = attr
+			}
+			formatter = f
+		case "jsonpath":
+			formatter = &ppath.PathFormatterJSONPath{}
+		default:
+			return cli.Exit(fmt.Errorf("unsupported path format: %s", format), 1)
+		}
+
 		if filePath != "" {
 			if buf, err = ioutil.ReadFile(filePath); err != nil {
 				return cli.Exit(fmt.Errorf("read from file: %w", err), 1)
@@ -74,23 +87,19 @@ func Run() {
 			}
 		}
 
-		var p path.Path
-		var matcher searcher.NodeMatcher
+		var matcher dmatcher.NodeMatcher
 		if col == 0 {
-			matcher = searcher.NewNodeMatcherByLine(int(line))
+			matcher = dmatcher.NewNodeMatcherByLine(int(line))
 		} else {
-			matcher = searcher.NewNodeMatcherByLineAndCol(int(line), int(col))
+			matcher = dmatcher.NewNodeMatcherByLineAndCol(int(line), int(col))
 		}
-		p.Path, err = searcher.PathAtPoint(matcher, buf)
+		path, err := ppath.NewPath(buf, matcher)
 		if err != nil {
-			if errors.As(err, &searcher.TokenNotFoundError{}) {
-				return cli.Exit(err, 1)
-			}
-			return cli.Exit(fmt.Errorf("specify token path: %w", err), 1)
+			return cli.Exit(fmt.Errorf("resolve path: %w", err), 1)
 		}
-		strpath, err := p.ToString(path.Format(format))
+		strpath, err := path.ToString(formatter)
 		if err != nil {
-			return cli.Exit(fmt.Errorf("format path: %w", err), 1)
+			return cli.Exit(fmt.Errorf("path formatting error: %s", format), 1)
 		}
 		fmt.Println(strpath)
 

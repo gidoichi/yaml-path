@@ -30,7 +30,7 @@ func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 				return "", fmt.Errorf("get node: %w", err)
 			}
 			for j, c = range cur.Content {
-				if c == next {
+				if c == (*yamlv3.Node)(next) {
 					break
 				}
 			}
@@ -44,7 +44,7 @@ func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 			if err != nil {
 				return "", fmt.Errorf("get node: %w", err)
 			}
-			if prev.Kind == yamlv3.ScalarNode || prev.Kind == yamlv3.SequenceNode {
+			if prev.Kind == yamlv3.SequenceNode {
 				continue
 			}
 			strpath += f.Separator + cur.Value
@@ -75,7 +75,7 @@ func (f *PathFormatterJSONPath) ToString(path *Path) (strpath string, err error)
 				return "", fmt.Errorf("get node: %w", err)
 			}
 			for j, c := range cur.Content {
-				if c == next {
+				if c == (*yamlv3.Node)(next) {
 					strpath += fmt.Sprintf("[%d]", j)
 					break
 				}
@@ -85,7 +85,7 @@ func (f *PathFormatterJSONPath) ToString(path *Path) (strpath string, err error)
 			if err != nil {
 				return "", fmt.Errorf("get node: %w", err)
 			}
-			if prev.Kind == yamlv3.ScalarNode || prev.Kind == yamlv3.SequenceNode {
+			if prev.Kind == yamlv3.SequenceNode {
 				continue
 			}
 			strpath += cur.Value

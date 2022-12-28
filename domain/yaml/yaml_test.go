@@ -52,14 +52,14 @@ var _ = Describe("YAML", func() {
 				Expect(err).To(BeNil())
 			})
 
-			Context("When indicating at some token", func() {
+			Context("When indicating at mapping value node", func() {
 				matcher := dmatcher.NewNodeMatcherByLineAndCol(5, 14)
 
 				It("should return the path to the token.", func() {
 					path, err := yaml.PathAtPoint(matcher)
 
 					Expect(err).To(BeNil())
-					Expect(len(path)).To(Equal(9))
+					Expect(len(path)).To(Equal(8))
 					Expect(path[0].Kind).To(Equal(yamlv3.DocumentNode))
 					Expect(path[1].Kind).To(Equal(yamlv3.MappingNode))
 					Expect(path[2].Kind).To(Equal(yamlv3.ScalarNode))
@@ -71,8 +71,26 @@ var _ = Describe("YAML", func() {
 					Expect(path[6].Kind).To(Equal(yamlv3.MappingNode))
 					Expect(path[7].Kind).To(Equal(yamlv3.ScalarNode))
 					Expect(path[7].Value).To(Equal("attr2"))
-					Expect(path[8].Kind).To(Equal(yamlv3.ScalarNode))
-					Expect(path[8].Value).To(Equal("val2"))
+				})
+			})
+
+			Context("When indicating at sequence value node", func() {
+				matcher := dmatcher.NewNodeMatcherByLineAndCol(7, 7)
+
+				It("should return the path to the token.", func() {
+					path, err := yaml.PathAtPoint(matcher)
+
+					Expect(err).To(BeNil())
+					Expect(len(path)).To(Equal(7))
+					Expect(path[0].Kind).To(Equal(yamlv3.DocumentNode))
+					Expect(path[1].Kind).To(Equal(yamlv3.MappingNode))
+					Expect(path[2].Kind).To(Equal(yamlv3.ScalarNode))
+					Expect(path[2].Value).To(Equal("top"))
+					Expect(path[3].Kind).To(Equal(yamlv3.MappingNode))
+					Expect(path[4].Kind).To(Equal(yamlv3.ScalarNode))
+					Expect(path[4].Value).To(Equal("first"))
+					Expect(path[5].Kind).To(Equal(yamlv3.SequenceNode))
+					Expect(path[6].Kind).To(Equal(yamlv3.ScalarNode))
 				})
 			})
 

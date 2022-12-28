@@ -25,12 +25,8 @@ func (p *Path) Len() int {
 	return len(p.Path)
 }
 
-func (p *Path) Get(i int) (node *yamlv3.Node, err error) {
-	if p.Len() <= i {
-		return nil, fmt.Errorf("index out of range: %d", i)
-	}
-
-	return p.Path[i], nil
+func (p *Path) Get(i int) (node *dyaml.Node, err error) {
+	return p.Path.Get(i)
 }
 
 func NewPath(in []byte, matcher dmatcher.NodeMatcher) (path *Path, err error) {

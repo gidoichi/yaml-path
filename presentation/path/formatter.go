@@ -17,11 +17,11 @@ type PathFormatterBosh struct {
 
 func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 	for i := 0; i < path.Len(); i++ {
-		cur, err := path.Get(i)
+		node, err := path.Get(i)
 		if err != nil {
 			return "", fmt.Errorf("get node: %w", err)
 		}
-		switch cur.Kind {
+		switch node.Kind {
 		case yamlv3.SequenceNode:
 			i++
 			next, err := path.Get(i)
@@ -57,11 +57,11 @@ type PathFormatterJSONPath struct{}
 
 func (f *PathFormatterJSONPath) ToString(path *Path) (strpath string, err error) {
 	for i := 0; i < path.Len(); i++ {
-		cur, err := path.Get(i)
+		node, err := path.Get(i)
 		if err != nil {
 			return "", fmt.Errorf("get node: %w", err)
 		}
-		switch cur.Kind {
+		switch node.Kind {
 		case yamlv3.DocumentNode:
 			strpath += "$"
 		case yamlv3.SequenceNode:

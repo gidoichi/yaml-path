@@ -1,13 +1,11 @@
 package yaml
 
-import "gopkg.in/yaml.v3"
+import (
+	yamlv3 "gopkg.in/yaml.v3"
+)
 
-type Node yaml.Node
+type Node yamlv3.Node
 
-func (n *Node) IsMappingKeyNode() bool {
-	return true
-}
-
-func (n *Node) IsMappingValueNode() bool {
-	return true
-}
+const (
+	intTag = "!!int"
+)

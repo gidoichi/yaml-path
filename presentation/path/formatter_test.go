@@ -66,17 +66,31 @@ var _ = Describe("Path", func() {
 			})
 		})
 
-		Context("When path is converted to bosh format", func() {
+		Context("When path is converted using sequence selector indicating exist node", func() {
 			formatter := &ppath.PathFormatterBosh{
 				Separator: "/",
 				NameAttr:  "name",
 			}
 
-			It("should converted to bosh format.", func() {
+			It("should converted to bosh format with selector.", func() {
 				strpath, err := path.ToString(formatter)
 
 				Expect(err).To(BeNil())
 				Expect(strpath).To(Equal("/top/first/name=myname/attr2"))
+			})
+		})
+
+		Context("When path is converted using sequence selector not indicating exist node", func() {
+			formatter := &ppath.PathFormatterBosh{
+				Separator: "/",
+				NameAttr:  "dummy",
+			}
+
+			It("should converted to bosh format without selector.", func() {
+				strpath, err := path.ToString(formatter)
+
+				Expect(err).To(BeNil())
+				Expect(strpath).To(Equal("/top/first/0/attr2"))
 			})
 		})
 

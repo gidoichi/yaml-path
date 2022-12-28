@@ -2,6 +2,7 @@ package yaml
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gidoichi/yaml-path/domain/matcher"
 	yamlv3 "gopkg.in/yaml.v3"
@@ -41,7 +42,7 @@ func (y *YAML) PathAtPoint(matcher matcher.NodeMatcher) (path Path, err error) {
 	path = rev
 
 	len := path.Len()
-	if path[len-3].Kind == yamlv3.MappingNode {
+	if path[len-3].Kind == yamlv3.MappingNode || path[len-3].Kind == yamlv3.SequenceNode {
 		path = path[:len-1]
 	}
 	return path, nil
@@ -52,7 +53,7 @@ func (y *YAML) PathAtPoint(matcher matcher.NodeMatcher) (path Path, err error) {
 //
 // For example, when yaml path is $.top.first[0].attr2, then
 // returned value is reversed order of (Document -> Mapping -> Scaler{"top"} ->
-// Mapping -> Scaler{"first"} -> Sequence -> Mapping -> Scaler{"attr2"}).
+// Mapping -> Scaler{"first"} -> Sequence -> Scaler{"0"} -> Mapping -> Scaler{"attr2"}).
 func (y *YAML) findMatchedToken(matcher matcher.NodeMatcher, node *yamlv3.Node) (revpath Path, match bool) {
 	switch node.Kind {
 	case yamlv3.DocumentNode:
@@ -65,12 +66,17 @@ func (y *YAML) findMatchedToken(matcher matcher.NodeMatcher, node *yamlv3.Node) 
 		}
 
 	case yamlv3.SequenceNode:
-		for _, child := range node.Content {
+		for i, child := range node.Content {
 			p, m := y.findMatchedToken(matcher, child)
 			if !m {
 				continue
 			}
-			return append(p, node), true
+			index := &yamlv3.Node{
+				Kind:  yamlv3.ScalarNode,
+				Tag:   intTag,
+				Value: strconv.Itoa(i),
+			}
+			return append(p, index, node), true
 		}
 
 	case yamlv3.MappingNode:

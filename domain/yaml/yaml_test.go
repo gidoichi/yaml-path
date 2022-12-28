@@ -59,7 +59,7 @@ var _ = Describe("YAML", func() {
 					path, err := yaml.PathAtPoint(matcher)
 
 					Expect(err).To(BeNil())
-					Expect(len(path)).To(Equal(8))
+					Expect(len(path)).To(Equal(9))
 					Expect(path[0].Kind).To(Equal(yamlv3.DocumentNode))
 					Expect(path[1].Kind).To(Equal(yamlv3.MappingNode))
 					Expect(path[2].Kind).To(Equal(yamlv3.ScalarNode))
@@ -68,9 +68,11 @@ var _ = Describe("YAML", func() {
 					Expect(path[4].Kind).To(Equal(yamlv3.ScalarNode))
 					Expect(path[4].Value).To(Equal("first"))
 					Expect(path[5].Kind).To(Equal(yamlv3.SequenceNode))
-					Expect(path[6].Kind).To(Equal(yamlv3.MappingNode))
-					Expect(path[7].Kind).To(Equal(yamlv3.ScalarNode))
-					Expect(path[7].Value).To(Equal("attr2"))
+					Expect(path[6].Kind).To(Equal(yamlv3.ScalarNode))
+					Expect(path[6].Value).To(Equal("0"))
+					Expect(path[7].Kind).To(Equal(yamlv3.MappingNode))
+					Expect(path[8].Kind).To(Equal(yamlv3.ScalarNode))
+					Expect(path[8].Value).To(Equal("attr2"))
 				})
 			})
 
@@ -91,6 +93,7 @@ var _ = Describe("YAML", func() {
 					Expect(path[4].Value).To(Equal("first"))
 					Expect(path[5].Kind).To(Equal(yamlv3.SequenceNode))
 					Expect(path[6].Kind).To(Equal(yamlv3.ScalarNode))
+					Expect(path[6].Value).To(Equal("1"))
 				})
 			})
 

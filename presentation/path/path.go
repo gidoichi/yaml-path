@@ -7,7 +7,6 @@ import (
 
 	dmatcher "github.com/gidoichi/yaml-path/domain/matcher"
 	dyaml "github.com/gidoichi/yaml-path/domain/yaml"
-	yamlv3 "gopkg.in/yaml.v3"
 )
 
 type Format string
@@ -43,26 +42,6 @@ func NewPath(in []byte, matcher dmatcher.NodeMatcher) (path *Path, err error) {
 	return &Path{
 		Path: p,
 	}, nil
-}
-
-func (p *Path) get_node_name(node *yamlv3.Node, value string) string {
-	if node.Kind != yamlv3.MappingNode {
-		return ""
-	}
-
-	for i := 0; i < len(node.Content); i += 2 {
-		keyNode := node.Content[i]
-		valNode := node.Content[i+1]
-		if keyNode.Value != value {
-			continue
-		}
-		if valNode.Kind != yamlv3.ScalarNode {
-			return ""
-		}
-		return valNode.Value
-	}
-
-	return ""
 }
 
 func (p *Path) String() (strpath string) {

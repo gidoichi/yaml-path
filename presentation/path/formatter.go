@@ -2,6 +2,7 @@ package path
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	yamlv3 "gopkg.in/yaml.v3"
@@ -30,12 +31,16 @@ func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 			if err != nil {
 				return "", fmt.Errorf("get node: %w", err)
 			}
-			next2, err := path.Get(i + 1)
-			if err == nil {
-				if name := path.get_node_name((*yamlv3.Node)(next2), f.NameAttr); name != "" {
-					sb.WriteString(f.Separator + f.NameAttr + "=" + name)
-					continue
-				}
+			seqidx, err := strconv.ParseInt(next.Value, 10, 0)
+			if err != nil {
+				return "", fmt.Errorf("invalid number: %w", err)
+			}
+
+			// if the child node of the 'node' is MappingNode,
+			// use specified node's value to indicate the child.
+			if name := node.GetChildNodeByIndex(int(seqidx)).FindChildValueByKey(f.NameAttr); name != "" {
+				sb.WriteString(f.Separator + f.NameAttr + "=" + name)
+				continue
 			}
 			sb.WriteString(f.Separator + next.Value)
 		case yamlv3.MappingNode:

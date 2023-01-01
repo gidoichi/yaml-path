@@ -94,6 +94,42 @@ var _ = Describe("Path", func() {
 			})
 		})
 
+		Context("When path is converted using sequence selector indicating exist conflicted node", func() {
+			data = []byte(`top:
+  first:
+    - name: myname
+      attr1: val1
+      attr2: val2
+      #       ^
+    - name: myname
+      attr1: val1
+      attr2: val2
+    - value2
+    - value3
+  second:
+    child1: value1
+    child1: value2
+    child3: value3
+`)
+			formatter := &ppath.PathFormatterBosh{
+				Separator: "/",
+				NameAttr:  "name",
+			}
+			BeforeEach(func() {
+				matcher := dmatcher.NewNodeMatcherByLineAndCol(5, 14)
+				var err error
+				path, err = ppath.NewPath(data, matcher)
+				Expect(err).To(BeNil())
+			})
+
+			It("should converted to bosh format without selector.", func() {
+				strpath, err := path.ToString(formatter)
+
+				Expect(err).To(BeNil())
+				Expect(strpath).To(Equal("/top/first/0/attr2"))
+			})
+		})
+
 		Context("When path is converted to jsonpath format", func() {
 			formatter := &ppath.PathFormatterJSONPath{}
 

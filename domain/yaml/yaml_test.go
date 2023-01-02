@@ -25,7 +25,7 @@ var _ = Describe("YAML", func() {
 
 	Describe("NewYAML()", func() {
 		Context("When given valid yaml", func() {
-			It("should return parsed yaml.", func() {
+			It("should return parsed yaml", func() {
 				_, err := dyaml.NewYAML(data)
 
 				Expect(err).To(BeNil())
@@ -35,7 +35,7 @@ var _ = Describe("YAML", func() {
 		Context("When given invalid yaml", func() {
 			invalid := []byte("top: -")
 
-			It("should return an error.", func() {
+			It("should return an error", func() {
 				_, err := dyaml.NewYAML(invalid)
 
 				Expect(err).NotTo(BeNil())
@@ -43,7 +43,7 @@ var _ = Describe("YAML", func() {
 		})
 	})
 
-	var _ = Describe("PathAtPoint()", func() {
+	Describe("PathAtPoint()", func() {
 		Context("When given valid yaml", func() {
 			var yaml *dyaml.YAML
 			BeforeEach(func() {
@@ -55,7 +55,7 @@ var _ = Describe("YAML", func() {
 			Context("When indicating at mapping value node", func() {
 				matcher := dmatcher.NewNodeMatcherByLineAndCol(5, 14)
 
-				It("should return the path to the token.", func() {
+				It("should return the path to the token", func() {
 					path, err := yaml.PathAtPoint(matcher)
 
 					Expect(err).To(BeNil())
@@ -79,7 +79,7 @@ var _ = Describe("YAML", func() {
 			Context("When indicating at sequence value node", func() {
 				matcher := dmatcher.NewNodeMatcherByLineAndCol(7, 7)
 
-				It("should return the path to the token.", func() {
+				It("should return the path to the token", func() {
 					path, err := yaml.PathAtPoint(matcher)
 
 					Expect(err).To(BeNil())
@@ -100,7 +100,7 @@ var _ = Describe("YAML", func() {
 			Context("When indicating at no token", func() {
 				matcher := dmatcher.NewNodeMatcherByLineAndCol(6, 14)
 
-				It("should return token not found error.", func() {
+				It("should return token not found error", func() {
 					_, err := yaml.PathAtPoint(matcher)
 
 					Expect(err).To(BeAssignableToTypeOf(dyaml.TokenNotFoundError{}))

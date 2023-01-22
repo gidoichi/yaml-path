@@ -19,17 +19,16 @@ type PathFormatterBosh struct {
 
 func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 	var builder strings.Builder
-	for i := 0; i < path.Len(); i++ {
-		node, err := path.Get(i)
-		if err != nil {
-			return "", fmt.Errorf("get node: %w", err)
+	iter := path.Iter()
+	for node := iter.Next(); node != nil; node = iter.Next() {
+		if node == nil {
+			return "", fmt.Errorf("get root node from path: %+v", path)
 		}
 		switch node.Kind {
 		case yamlv3.SequenceNode:
-			i++
-			next, err := path.Get(i)
-			if err != nil {
-				return "", fmt.Errorf("get node: %w", err)
+			next := iter.Next()
+			if next == nil {
+				return "", fmt.Errorf("get next node with iterator: %+v", iter)
 			}
 			seqidx, err := strconv.ParseInt(next.Value, 10, 0)
 			if err != nil {
@@ -42,16 +41,15 @@ func (f *PathFormatterBosh) ToString(path *Path) (strpath string, err error) {
 			}
 			builder.WriteString(f.Separator + next.Value)
 		case yamlv3.MappingNode:
-			i++
-			next, err := path.Get(i)
-			if err != nil {
-				return "", fmt.Errorf("get node: %w", err)
+			next := iter.Next()
+			if next == nil {
+				return "", fmt.Errorf("get next node with iterator: %+v", iter)
 			}
 			builder.WriteString(f.Separator + next.Value)
 		case yamlv3.DocumentNode, yamlv3.ScalarNode, yamlv3.AliasNode:
 			continue
 		default:
-			return "", fmt.Errorf("invalid path: %s", path)
+			return "", fmt.Errorf("invalid path: %+v", path)
 		}
 	}
 
@@ -62,30 +60,30 @@ type PathFormatterJSONPath struct{}
 
 func (f *PathFormatterJSONPath) ToString(path *Path) (strpath string, err error) {
 	var builder strings.Builder
-	for i := 0; i < path.Len(); i++ {
-		node, err := path.Get(i)
-		if err != nil {
-			return "", fmt.Errorf("get node: %w", err)
+	iter := path.Iter()
+	for node := iter.Next(); node != nil; node = iter.Next() {
+		if node == nil {
+			return "", fmt.Errorf("get root node from path: %+v", path)
 		}
 		switch node.Kind {
 		case yamlv3.DocumentNode:
 			builder.WriteString("$")
 		case yamlv3.SequenceNode:
-			next, err := path.Get(i + 1)
-			if err != nil {
-				return "", fmt.Errorf("get node: %w", err)
+			next := iter.Next()
+			if next == nil {
+				return "", fmt.Errorf("get next node with iterator: %+v", iter)
 			}
 			builder.WriteString("[" + next.Value + "]")
 		case yamlv3.MappingNode:
-			next, err := path.Get(i + 1)
-			if err != nil {
-				return "", fmt.Errorf("get node: %w", err)
+			next := iter.Next()
+			if next == nil {
+				return "", fmt.Errorf("get next node with iterator: %+v", iter)
 			}
 			builder.WriteString("." + next.Value)
 		case yamlv3.ScalarNode, yamlv3.AliasNode:
 			continue
 		default:
-			return "", fmt.Errorf("invalid path: %s", path)
+			return "", fmt.Errorf("invalid path: %+v", path)
 		}
 	}
 

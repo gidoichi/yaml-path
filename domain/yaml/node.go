@@ -55,15 +55,15 @@ func (n *Node) FindSequenceSelectionByMappingKey(idx int, key string) string {
 	return value
 }
 
-type Nodes []yamlv3.Node
+type Nodes []*yamlv3.Node
 
 type NodeIterator struct {
 	nodes *Nodes
 	idx   int
 }
 
-func NewNodeIterator(nodes *Nodes) NodeIterator {
-	return NodeIterator{
+func NewNodeIterator(nodes *Nodes) *NodeIterator {
+	return &NodeIterator{
 		nodes: nodes,
 		idx:   -1,
 	}
@@ -75,5 +75,5 @@ func (i *NodeIterator) Next() *Node {
 		i.idx--
 		return nil
 	}
-	return (*Node)(&(*i.nodes)[i.idx])
+	return (*Node)((*i.nodes)[i.idx])
 }

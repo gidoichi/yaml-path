@@ -20,5 +20,5 @@ func (p *Path) Len() int {
 }
 
 func (p *Path) Iter() *NodeIterator {
-	return NewNodeIterator(p)
+	return NewNodeIterator((*Nodes)(p))
 }

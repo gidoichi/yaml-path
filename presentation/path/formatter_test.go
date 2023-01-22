@@ -35,7 +35,7 @@ var _ = Describe("Path", func() {
 	})
 
 	Describe("ToString()", func() {
-		Context("When invalid path (having invalid kind node) is given", func() {
+		Context("with invalid path (having invalid kind node)", func() {
 			BeforeEach(func() {
 				path = &ppath.Path{
 					Path: dyaml.Path{
@@ -53,7 +53,7 @@ var _ = Describe("Path", func() {
 			})
 		})
 
-		Context("When invalid path (having no value node next sequence node) is given", func() {
+		Context("with invalid path (having no value node next sequence node)", func() {
 			BeforeEach(func() {
 				path = &ppath.Path{
 					Path: dyaml.Path{
@@ -72,14 +72,14 @@ var _ = Describe("Path", func() {
 			})
 		})
 
-		Context("When path is converted using sequence selector indicating exist node", func() {
+		Context("with path using sequence selector indicating exist node", func() {
 			BeforeEach(func() {
 				formatter = &ppath.PathFormatterBosh{
 					Separator: "/",
 					NameAttr:  "name",
 				}
 			})
-			It("should converted to bosh format with selector", func() {
+			It("should convert to bosh format with selector", func() {
 				strpath, err := path.ToString(formatter)
 
 				Expect(err).To(BeNil())
@@ -87,14 +87,14 @@ var _ = Describe("Path", func() {
 			})
 		})
 
-		Context("When path is converted using sequence selector not indicating exist node", func() {
+		Context("with path using sequence selector not indicating exist node", func() {
 			BeforeEach(func() {
 				formatter = &ppath.PathFormatterBosh{
 					Separator: "/",
 					NameAttr:  "dummy",
 				}
 			})
-			It("should converted to bosh format without selector", func() {
+			It("should convert to bosh format without selector", func() {
 				strpath, err := path.ToString(formatter)
 
 				Expect(err).To(BeNil())
@@ -102,7 +102,7 @@ var _ = Describe("Path", func() {
 			})
 		})
 
-		Context("When path is converted using sequence selector indicating exist conflicted node", func() {
+		Context("with path using sequence selector indicating exist conflicted node", func() {
 			BeforeEach(func() {
 				formatter = &ppath.PathFormatterBosh{
 					Separator: "/",
@@ -130,7 +130,7 @@ var _ = Describe("Path", func() {
 				Expect(err).To(BeNil())
 			})
 
-			It("should converted to bosh format without selector", func() {
+			It("should convert to bosh format without selector", func() {
 				strpath, err := path.ToString(formatter)
 
 				Expect(err).To(BeNil())
@@ -138,12 +138,12 @@ var _ = Describe("Path", func() {
 			})
 		})
 
-		Context("When path is converted to jsonpath format", func() {
+		Context("converting to jsonpath format", func() {
 			BeforeEach(func() {
 				formatter = &ppath.PathFormatterJSONPath{}
 			})
 
-			It("should converted to jsonpath format", func() {
+			It("should convert to jsonpath format", func() {
 				strpath, err := path.ToString(formatter)
 
 				Expect(err).To(BeNil())

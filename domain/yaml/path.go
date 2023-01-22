@@ -18,3 +18,7 @@ func (p *Path) Get(i int) (node *Node, err error) {
 func (p *Path) Len() int {
 	return len(*p)
 }
+
+func (p *Path) Iter() *NodeIterator {
+	return NewNodeIterator(p)
+}

@@ -1,6 +1,9 @@
 package yaml_test
 
 import (
+	"bytes"
+	"io"
+
 	dmatcher "github.com/gidoichi/yaml-path/domain/matcher"
 	dyaml "github.com/gidoichi/yaml-path/domain/yaml"
 	. "github.com/onsi/ginkgo/v2"
@@ -22,21 +25,34 @@ var _ = Describe("YAML", func() {
     child1: value2
     child3: value3
 `)
+	var reader io.Reader
+	BeforeEach(func() {
+		reader = bytes.NewReader(data)
+	})
 
 	Describe("NewYAML()", func() {
-		Context("with valid yaml", func() {
+		Context("with single document yaml", func() {
 			It("should return parsed yaml", func() {
-				_, err := dyaml.NewYAML(data)
+				_, err := dyaml.NewYAML(reader)
 
 				Expect(err).To(BeNil())
 			})
 		})
 
+		Context("with multiple document yaml", func() {
+			It("should return parsed yaml", func() {
+				Expect(nil).NotTo(BeNil())
+			})
+		})
+
 		Context("with invalid yaml", func() {
 			invalid := []byte("top: -")
+			BeforeEach(func() {
+				reader = bytes.NewReader(invalid)
+			})
 
 			It("should return an error", func() {
-				_, err := dyaml.NewYAML(invalid)
+				_, err := dyaml.NewYAML(reader)
 
 				Expect(err).NotTo(BeNil())
 			})
@@ -44,11 +60,11 @@ var _ = Describe("YAML", func() {
 	})
 
 	Describe("PathAtPoint()", func() {
-		Context("with valid yaml", func() {
+		Context("with single document yaml", func() {
 			var yaml *dyaml.YAML
 			BeforeEach(func() {
 				var err error
-				yaml, err = dyaml.NewYAML(data)
+				yaml, err = dyaml.NewYAML(reader)
 				Expect(err).To(BeNil())
 			})
 
@@ -104,6 +120,14 @@ var _ = Describe("YAML", func() {
 					_, err := yaml.PathAtPoint(matcher)
 
 					Expect(err).To(BeAssignableToTypeOf(dyaml.TokenNotFoundError{}))
+				})
+			})
+		})
+
+		Context("with multiple document yaml", func() {
+			Context("indicating at document after the second", func() {
+				It("should return the path to the token", func() {
+					Expect(nil).NotTo(BeNil())
 				})
 			})
 		})

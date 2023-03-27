@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"runtime/debug"
 
@@ -53,7 +52,7 @@ func Run() {
 	}
 
 	app.Action = func(c *cli.Context) error {
-		var buf []byte
+		var file *os.File
 		var err error
 		line := c.Uint("line")
 		col := c.Uint("col")
@@ -78,13 +77,11 @@ func Run() {
 		}
 
 		if filePath != "" {
-			if buf, err = ioutil.ReadFile(filePath); err != nil {
+			if file, err = os.Open(filePath); err != nil {
 				return cli.Exit(fmt.Errorf("read from file: %w", err), 1)
 			}
 		} else {
-			if buf, err = ioutil.ReadAll(os.Stdin); err != nil {
-				return cli.Exit(fmt.Errorf("read from stdin: %w", err), 1)
-			}
+			file = os.Stdin
 		}
 
 		var matcher dmatcher.NodeMatcher
@@ -93,7 +90,7 @@ func Run() {
 		} else {
 			matcher = dmatcher.NewNodeMatcherByLineAndCol(int(line), int(col))
 		}
-		path, err := ppath.NewPath(buf, matcher)
+		path, err := ppath.NewPath(file, matcher)
 		if err != nil {
 			return cli.Exit(fmt.Errorf("resolve path: %w", err), 1)
 		}

@@ -2,13 +2,14 @@ package yaml
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 
 	"github.com/gidoichi/yaml-path/domain/matcher"
 	yamlv3 "gopkg.in/yaml.v3"
 )
 
-type YAML yamlv3.Node
+type YAML []yamlv3.Node
 
 type TokenNotFoundError struct {
 	Matcher matcher.NodeMatcher
@@ -18,34 +19,42 @@ func (e TokenNotFoundError) Error() string {
 	return fmt.Sprintf("token not found by %s", e.Matcher)
 }
 
-func NewYAML(in []byte) (dyaml *YAML, err error) {
-	node := &yamlv3.Node{}
-	if err := yamlv3.Unmarshal(in, node); err != nil {
-		return nil, fmt.Errorf("cannot unmarshal yaml: %w", err)
-	}
-	if node.Kind != yamlv3.DocumentNode {
-		return nil, fmt.Errorf("invalid yaml file: top level is not document node")
+func NewYAML(in io.Reader) (*YAML, error) {
+	var dyaml YAML
+
+	decoder := yamlv3.NewDecoder(in)
+	for {
+		var node yamlv3.Node
+		if err := decoder.Decode(&node); err != nil {
+			if err != io.EOF {
+				return nil, err
+			}
+			break
+		}
+		dyaml = append(dyaml, node)
 	}
 
-	return (*YAML)(node), nil
+	return &dyaml, nil
 }
 
-func (y *YAML) PathAtPoint(matcher matcher.NodeMatcher) (path Path, err error) {
-	rev, m := y.findMatchedToken(matcher, (*yamlv3.Node)(y))
-	if !m {
-		e := TokenNotFoundError{
-			Matcher: matcher,
+func (y *YAML) PathAtPoint(matcher matcher.NodeMatcher) (Path, error) {
+	for _, document := range *y {
+		rev, found := y.findMatchedToken(matcher, &document)
+		if !found {
+			continue
 		}
-		return nil, e
-	}
-	y.reverse(rev)
-	path = rev
 
-	len := path.Len()
-	if path[len-3].Kind == yamlv3.MappingNode || path[len-3].Kind == yamlv3.SequenceNode {
-		path = path[:len-1]
+		y.reverse(rev)
+		path := rev
+		len := path.Len()
+		if path[len-3].Kind == yamlv3.MappingNode || path[len-3].Kind == yamlv3.SequenceNode {
+			path = path[:len-1]
+		}
+		return path, nil
 	}
-	return path, nil
+	return nil, TokenNotFoundError{
+		Matcher: matcher,
+	}
 }
 
 // findTokenAtPoint returns token path the arguments indicated.

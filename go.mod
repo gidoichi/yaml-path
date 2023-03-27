@@ -1,5 +1,6 @@
 module github.com/gidoichi/yaml-path
 
+// TODO: update version
 go 1.17
 
 require (

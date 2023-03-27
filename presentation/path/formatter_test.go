@@ -1,6 +1,8 @@
 package path_test
 
 import (
+	"bytes"
+
 	dmatcher "github.com/gidoichi/yaml-path/domain/matcher"
 	dyaml "github.com/gidoichi/yaml-path/domain/yaml"
 	ppath "github.com/gidoichi/yaml-path/presentation/path"
@@ -28,9 +30,10 @@ var _ = Describe("Path", func() {
     child1: value2
     child3: value3
 `)
+		reader := bytes.NewReader(data)
 		matcher := dmatcher.NewNodeMatcherByLineAndCol(5, 14)
 		var err error
-		path, err = ppath.NewPath(data, matcher)
+		path, err = ppath.NewPath(reader, matcher)
 		Expect(err).To(BeNil())
 	})
 
@@ -124,9 +127,10 @@ var _ = Describe("Path", func() {
     child1: value2
     child3: value3
 `)
+				reader := bytes.NewReader(data)
 				matcher := dmatcher.NewNodeMatcherByLineAndCol(5, 14)
 				var err error
-				path, err = ppath.NewPath(data, matcher)
+				path, err = ppath.NewPath(reader, matcher)
 				Expect(err).To(BeNil())
 			})
 

@@ -2,6 +2,7 @@ package path
 
 import (
 	"fmt"
+	"io"
 	"reflect"
 	"strings"
 
@@ -28,7 +29,7 @@ func (p *Path) Get(i int) (node *dyaml.Node, err error) {
 	return p.Path.Get(i)
 }
 
-func NewPath(in []byte, matcher dmatcher.NodeMatcher) (path *Path, err error) {
+func NewPath(in io.Reader, matcher dmatcher.NodeMatcher) (path *Path, err error) {
 	yaml, err := dyaml.NewYAML(in)
 	if err != nil {
 		return nil, err

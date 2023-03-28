@@ -34,7 +34,7 @@ var _ = Describe("Path", func() {
 		matcher := dmatcher.NewNodeMatcherByLineAndCol(5, 14)
 		var err error
 		path, err = ppath.NewPath(reader, matcher)
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	Describe("ToString()", func() {
@@ -49,10 +49,11 @@ var _ = Describe("Path", func() {
 				}
 				formatter = &ppath.PathFormatterBosh{}
 			})
+
 			It("should fail to convert to string", func() {
 				_, err := path.ToString(formatter)
 
-				Expect(err).NotTo(BeNil())
+				Expect(err).To(HaveOccurred())
 			})
 		})
 
@@ -71,7 +72,7 @@ var _ = Describe("Path", func() {
 			It("should fail to convert to string", func() {
 				_, err := path.ToString(formatter)
 
-				Expect(err).NotTo(BeNil())
+				Expect(err).To(HaveOccurred())
 			})
 		})
 
@@ -85,7 +86,7 @@ var _ = Describe("Path", func() {
 			It("should convert to bosh format with selector", func() {
 				strpath, err := path.ToString(formatter)
 
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(HaveOccurred())
 				Expect(strpath).To(Equal("/top/first/name=myname/attr2"))
 			})
 		})
@@ -100,7 +101,7 @@ var _ = Describe("Path", func() {
 			It("should convert to bosh format without selector", func() {
 				strpath, err := path.ToString(formatter)
 
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(HaveOccurred())
 				Expect(strpath).To(Equal("/top/first/0/attr2"))
 			})
 		})
@@ -131,13 +132,13 @@ var _ = Describe("Path", func() {
 				matcher := dmatcher.NewNodeMatcherByLineAndCol(5, 14)
 				var err error
 				path, err = ppath.NewPath(reader, matcher)
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("should convert to bosh format without selector", func() {
 				strpath, err := path.ToString(formatter)
 
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(HaveOccurred())
 				Expect(strpath).To(Equal("/top/first/0/attr2"))
 			})
 		})
@@ -150,7 +151,7 @@ var _ = Describe("Path", func() {
 			It("should convert to jsonpath format", func() {
 				strpath, err := path.ToString(formatter)
 
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(HaveOccurred())
 				Expect(strpath).To(Equal("$.top.first[0].attr2"))
 			})
 		})

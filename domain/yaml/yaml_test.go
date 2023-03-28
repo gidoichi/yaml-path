@@ -25,23 +25,38 @@ var _ = Describe("YAML", func() {
     child1: value2
     child3: value3
 `)
+	multi := []byte(`first:
+  - document
+---
+second:
+  - document
+`)
+
 	var reader io.Reader
-	BeforeEach(func() {
-		reader = bytes.NewReader(data)
-	})
 
 	Describe("NewYAML()", func() {
 		Context("with single document yaml", func() {
+			BeforeEach(func() {
+				reader = bytes.NewReader(data)
+			})
+
 			It("should return parsed yaml", func() {
 				_, err := dyaml.NewYAML(reader)
 
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(HaveOccurred())
 			})
 		})
 
 		Context("with multiple document yaml", func() {
+			BeforeEach(func() {
+				reader = bytes.NewReader(multi)
+			})
+
 			It("should return parsed yaml", func() {
-				Expect(nil).NotTo(BeNil())
+				yaml, err := dyaml.NewYAML(reader)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(*yaml).To(HaveLen(2))
 			})
 		})
 
@@ -54,18 +69,20 @@ var _ = Describe("YAML", func() {
 			It("should return an error", func() {
 				_, err := dyaml.NewYAML(reader)
 
-				Expect(err).NotTo(BeNil())
+				Expect(err).To(HaveOccurred())
 			})
 		})
 	})
 
 	Describe("PathAtPoint()", func() {
+		var yaml *dyaml.YAML
+
 		Context("with single document yaml", func() {
-			var yaml *dyaml.YAML
 			BeforeEach(func() {
 				var err error
+				reader = bytes.NewReader(data)
 				yaml, err = dyaml.NewYAML(reader)
-				Expect(err).To(BeNil())
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			Context("indicating at mapping value node", func() {
@@ -74,7 +91,7 @@ var _ = Describe("YAML", func() {
 				It("should return the path to the token", func() {
 					path, err := yaml.PathAtPoint(matcher)
 
-					Expect(err).To(BeNil())
+					Expect(err).NotTo(HaveOccurred())
 					Expect(len(path)).To(Equal(9))
 					Expect(path[0].Kind).To(Equal(yamlv3.DocumentNode))
 					Expect(path[1].Kind).To(Equal(yamlv3.MappingNode))
@@ -98,8 +115,8 @@ var _ = Describe("YAML", func() {
 				It("should return the path to the token", func() {
 					path, err := yaml.PathAtPoint(matcher)
 
-					Expect(err).To(BeNil())
-					Expect(len(path)).To(Equal(7))
+					Expect(err).NotTo(HaveOccurred())
+					Expect(path).To(HaveLen(7))
 					Expect(path[0].Kind).To(Equal(yamlv3.DocumentNode))
 					Expect(path[1].Kind).To(Equal(yamlv3.MappingNode))
 					Expect(path[2].Kind).To(Equal(yamlv3.ScalarNode))
@@ -125,9 +142,28 @@ var _ = Describe("YAML", func() {
 		})
 
 		Context("with multiple document yaml", func() {
+			BeforeEach(func() {
+				var err error
+				reader = bytes.NewReader(multi)
+				yaml, err = dyaml.NewYAML(reader)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
 			Context("indicating at document after the second", func() {
+				matcher := dmatcher.NewNodeMatcherByLine(5)
+
 				It("should return the path to the token", func() {
-					Expect(nil).NotTo(BeNil())
+					path, err := yaml.PathAtPoint(matcher)
+
+					Expect(err).NotTo(HaveOccurred())
+					Expect(path).To(HaveLen(5))
+					Expect(path[0].Kind).To(Equal(yamlv3.DocumentNode))
+					Expect(path[1].Kind).To(Equal(yamlv3.MappingNode))
+					Expect(path[2].Kind).To(Equal(yamlv3.ScalarNode))
+					Expect(path[2].Value).To(Equal("second"))
+					Expect(path[3].Kind).To(Equal(yamlv3.SequenceNode))
+					Expect(path[4].Kind).To(Equal(yamlv3.ScalarNode))
+					Expect(path[4].Value).To(Equal("0"))
 				})
 			})
 		})

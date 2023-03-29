@@ -1,7 +1,6 @@
 module github.com/gidoichi/yaml-path
 
-// TODO: update version
-go 1.17
+go 1.20
 
 require (
 	github.com/onsi/ginkgo/v2 v2.1.4

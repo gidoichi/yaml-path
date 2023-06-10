@@ -36,18 +36,23 @@
         (line (if pline pline (number-to-string (line-number-at-pos))))
         (col  (if pcol  pcol  (number-to-string (current-column))))
         (outbuf (get-buffer-create "*yaml-path-result*")))
-
-    (when (= 0 (call-process-region
-                (point-min) (point-max) yaml-path-bin
-                nil outbuf nil
-                "--line" line "--col" col "--format" yaml-path-output-format))
-      (with-current-buffer outbuf
-        (setq result (replace-regexp-in-string "\n+" "" (buffer-string)))
-        ))
+    (cond ((zerop (progn
+                    (with-current-buffer outbuf (erase-buffer))
+                    (call-process-region
+                     (point-min) (point-max) yaml-path-bin nil outbuf nil
+                     "--line" line "--col" col "--format" yaml-path-output-format)))
+           (with-current-buffer outbuf
+             (setq result (replace-regexp-in-string "\n+" "" (buffer-string)))))
+          ((zerop (progn
+                    (with-current-buffer outbuf (erase-buffer))
+                    (call-process-region
+                     (point-min) (point-max) yaml-path-bin nil outbuf nil
+                     "--line" line "--format" yaml-path-output-format)))
+           (with-current-buffer outbuf
+             (setq result (replace-regexp-in-string "\n+" "" (buffer-string))))))
     (kill-buffer outbuf)
     result
-    )
-  )
+    ))
 
 ;;;###autoload
 (defun yaml-path-which-func()

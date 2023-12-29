@@ -27,7 +27,8 @@ jobs:
         with:
           name: updated-repo
           path: repo/
-  show:
+
+  no-diff:
     needs: generate
     runs-on: ubuntu-latest
     container:
@@ -58,3 +59,17 @@ jobs:
           set -eux
           cd repo
           git diff --exit-code --color
+
+  pull-request:
+    needs: generate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: updated-repo
+      - uses: peter-evans/create-pull-request@v5
+        id: create-pr
+        with:
+          branch: bot/update
+          delete-branch: true
+          token: ${{ secrets.GH_PAT_FOR_CREATE_PULL_REQUEST_ACTION }}

@@ -19,7 +19,7 @@ jobs:
         run: |
           set -eux
           R -q -e 'knitr::knit("README.Rmd")'
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v4
         with:
           name: updated-repo
           path: ${{ github.workspace }}

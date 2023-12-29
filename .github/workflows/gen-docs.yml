@@ -6,7 +6,7 @@ jobs:
     container:
       image: gidoichi/r-rmd
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: repo
       - name: Set up Go
@@ -37,7 +37,7 @@ jobs:
         with:
           name: updated-repo
           path: updated-repo
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: repo
       - name: Update files

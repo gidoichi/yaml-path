@@ -22,6 +22,8 @@ jobs:
         with:
           name: checkout
       - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
       - name: Build
         run: |
           set -eux

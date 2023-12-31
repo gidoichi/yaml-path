@@ -1,5 +1,7 @@
 name: Update Documents
-on: push
+on:
+  push:
+    branches: ["**"]
 jobs:
   checkout:
     runs-on: ubuntu-latest

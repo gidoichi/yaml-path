@@ -44,13 +44,13 @@ USAGE:
    yaml-path [global options] --line value
 
 GLOBAL OPTIONS:
-   --bosh.name value  set attribut name for bosh format, empty to disable (default: "name")
-   --bosh.sep value   set path separator for bosh format (default: "/")
    --col value        cursor column, zero to disable (default: 0)
-   --format value     output format. "bosh" or "jsonpath" (default: "bosh")
-   --help, -h         show help (default: false)
    --path value       set filepath, empty means stdin
-   --version, -v      print the version (default: false)
+   --format value     output format. "bosh" or "jsonpath" (default: "bosh")
+   --bosh.sep value   set path separator for bosh format (default: "/")
+   --bosh.name value  set attribut name for bosh format, empty to disable (default: "name")
+   --help, -h         show help
+   --version, -v      print the version
 ```
 
 # Example

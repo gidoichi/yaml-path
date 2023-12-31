@@ -57,5 +57,6 @@ jobs:
       - uses: peter-evans/create-pull-request@v5
         with:
           branch: create-pull-request/patch/gendocs
+          commit-message: "[skip ci] [create-pull-request] automated change"
           delete-branch: true
           token: ${{ secrets.GH_PAT_FOR_CREATE_PULL_REQUEST_ACTION }}

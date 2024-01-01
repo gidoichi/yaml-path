@@ -8,17 +8,10 @@
 
 **Table of Contents**
 
-- [What](#what)
-- [Why](#why)
-- [Usage](#usage)
-- [Example](#example)
-- [Installation](#installation)
-- [Integration](#integration)
-    - [Emacs](#emacs)
-    - [Vim](#vim)
-    - [Neovim](#neovim)
-    - [Intellij](#intellij)
-- [Note](#note)
+
+```
+## Error in loadNamespace(x): there is no package called 'xpectr'
+```
 
 # What
 

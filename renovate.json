@@ -5,5 +5,17 @@
   ],
   "schedule": "* 0 * * 6",
   "branchConcurrentLimit": 0,
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^.github/workflows/*\\.yml$"
+      ],
+      "matchStrings": [
+        "container:\\s*image: (?<currentValue>.*)\\s"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ]
 }

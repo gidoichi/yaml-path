@@ -10,10 +10,10 @@
     {
       "customType": "regex",
       "fileMatch": [
-        "^.github/workflows/*\\.yml$"
+        "^.github/workflows/**$"
       ],
       "matchStrings": [
-        "container:\\s*image: (?<depName>.*):(?<currentValue>.*)\\s"
+        "image: (?<depName>.*?):(?<currentValue>.*?)\\s"
       ],
       "datasourceTemplate": "docker"
     }

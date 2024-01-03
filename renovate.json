@@ -10,7 +10,7 @@
     {
       "customType": "regex",
       "fileMatch": [
-        "^\\.github/workflows/*\\.yml$"
+        "^\\.github/workflows/.*\\.yml$"
       ],
       "matchStrings": [
         "image: (?<depName>.*?):(?<currentValue>.*?)\\s"

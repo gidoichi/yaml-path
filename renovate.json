@@ -3,9 +3,10 @@
   "extends": [
     "config:recommended"
   ],
-  "schedule": "* * * * 6",
+  "automerge": true,
   "branchConcurrentLimit": 0,
   "labels": ["dependencies"],
+  "schedule": "* * * * 6",
   "customManagers": [
     {
       "customType": "regex",

@@ -10,6 +10,8 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var version string
+
 func Run() {
 	app := cli.NewApp()
 	app.ArgsUsage = "--line value"
@@ -32,7 +34,7 @@ func Run() {
 		},
 		&cli.StringFlag{
 			Name:  "format",
-			Usage: "output format. \"bosh\" or \"jsonpath\"",
+			Usage: `output format. "bosh" or "jsonpath"`,
 			Value: "bosh",
 		},
 		&cli.StringFlag{
@@ -49,6 +51,9 @@ func Run() {
 	app.HideHelpCommand = true
 	if info, ok := debug.ReadBuildInfo(); ok {
 		app.Version = info.Main.Version
+	}
+	if version != "" {
+		app.Version = version
 	}
 
 	app.Action = func(c *cli.Context) error {

@@ -3,10 +3,9 @@
   "extends": [
     "config:recommended"
   ],
-  "automerge": true,
   "branchConcurrentLimit": 0,
   "labels": ["dependencies"],
-  "schedule": "* * * * 6",
+  "schedule": "* * 1-7 * 6",
   "customManagers": [
     {
       "customType": "regex",
@@ -17,6 +16,15 @@
         "image: (?<depName>.*?):(?<currentValue>.*?)\\s"
       ],
       "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "groupName": "dependencies",
+      "matchPackagePatterns": [".*"],
+      "automerge": true,
+      "commitMessagePrefix": "[automerged]",
+      "commitMessageExtra": null
     }
   ]
 }

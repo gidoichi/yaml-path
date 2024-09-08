@@ -11,6 +11,7 @@ jobs:
         with:
           path: ${{ github.workspace }}
           name: checkout
+          include-hidden-files: true
 
   generate:
     needs: checkout
@@ -36,6 +37,7 @@ jobs:
         with:
           path: ${{ github.workspace }}
           name: generate
+          include-hidden-files: true
 
   no-diff:
     needs: generate

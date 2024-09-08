@@ -23,6 +23,7 @@
       "groupName": "dependencies",
       "matchPackagePatterns": [".*"],
       "automerge": true,
+      "recreateWhen": "always",
       "commitMessagePrefix": "[automerged]",
       "commitMessageExtra": null
     }

@@ -8,6 +8,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.23.3
 	github.com/onsi/gomega v1.37.0
 	github.com/urfave/cli/v2 v2.27.6
+	github.com/urfave/cli/v3 v3.1.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 

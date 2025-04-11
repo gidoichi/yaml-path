@@ -42,7 +42,7 @@ func (n *Node) FindSequenceSelectionByMappingKey(idx int, key string) string {
 	}
 
 	len := len(n.Content)
-	for i := 0; i < len; i++ {
+	for i := range len {
 		if i == idx {
 			continue
 		}

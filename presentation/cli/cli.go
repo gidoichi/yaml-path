@@ -15,7 +15,7 @@ var version string
 
 func Run() {
 	cmd := &cli.Command{
-		ArgsUsage: "--line value",
+		ArgsUsage: "--line uint",
 		Usage:     "Reads yaml and output a path corresponding to leftmost token at line, or at (line, col)",
 		Flags: []cli.Flag{
 			&cli.UintFlag{

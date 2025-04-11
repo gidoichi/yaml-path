@@ -41,7 +41,7 @@ This tool is meant to be easily integrated in editor such as emacs.
 
 ```
 USAGE:
-   yaml-path [global options] --line value
+   yaml-path [global options] --line uint
 
 GLOBAL OPTIONS:
    --col uint          cursor column, zero to disable (default: 0)

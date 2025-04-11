@@ -4,7 +4,9 @@
     "config:recommended"
   ],
   "branchConcurrentLimit": 0,
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "schedule": "* * 1-7 * 6",
   "customManagers": [
     {
@@ -21,11 +23,13 @@
   "packageRules": [
     {
       "groupName": "dependencies",
-      "matchPackagePatterns": [".*"],
       "automerge": true,
       "recreateWhen": "always",
       "commitMessagePrefix": "[automerged]",
-      "commitMessageExtra": null
+      "commitMessageExtra": null,
+      "matchPackageNames": [
+        "/.*/"
+      ]
     }
   ]
 }

@@ -49,7 +49,7 @@ func Run() {
 				Value: "name",
 			},
 		},
-		HideHelp: true,
+		HideHelpCommand: true,
 		Action: func(ctx context.Context, c *cli.Command) error {
 			var file *os.File
 			var err error

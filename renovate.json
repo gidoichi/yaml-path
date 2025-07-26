@@ -11,8 +11,8 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": [
-        "^\\.github/workflows/.*\\.yml$"
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.*\\.yml$/"
       ],
       "matchStrings": [
         "image: (?<depName>.*?):(?<currentValue>.*?)\\s"

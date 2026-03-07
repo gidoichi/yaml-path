@@ -2,12 +2,12 @@ module github.com/gidoichi/yaml-path
 
 go 1.24.0
 
-toolchain go1.25.7
+toolchain go1.26.1
 
 require (
 	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.1
-	github.com/urfave/cli/v3 v3.6.2
+	github.com/urfave/cli/v3 v3.7.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
